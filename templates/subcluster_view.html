@@ -1,0 +1,275 @@
+{% extends "cluster_view.html" %}
+
+{% block title %}
+<title>{{model|capfirst}}</title>
+{% endblock %}
+
+{% block jquery %}
+<script>
+$(document).ready(
+        function(){
+       		$(".cluster_form").toggle();
+       		$(".subcluster_form").toggle();
+		$('.btn-toggle').click(function(){
+			if($(this).attr("value")=="cluster_form"){
+       				$(".cluster_form").toggle();
+	       		};
+			if($(this).attr("value")=="subcluster_form"){
+       				$(".subcluster_form").toggle();
+	       		};
+	       	});
+		$('#node_table').DataTable({"order":[0, 'desc']});
+		$('#relation_table').DataTable({"order":[0, 'desc']});
+		$('#subcluster_table').DataTable({"order":[0, 'desc']});
+		$('#cluster_table').DataTable({"order":[0, 'desc']});
+                //$('#id_firstseen').datetimepicker({
+                //        format:'Y-m-d H:i'
+                //});
+                function table_btn(b){
+                        if(b.hasClass("node_id")){
+                        	if(b.hasClass("to_e")){
+                                	$("select#id_entity").val("node");
+                        		$("input#id_id").val(b.attr("value"));
+                        	}else if(b.hasClass("to_s")){
+                                	$("select#id_entity").val("node");
+                        		$("input#id_src_value").val(b.attr("value"));
+                        	}else if(b.hasClass("to_d")){
+                                	$("select#id_entity").val("node");
+                        		$("input#id_dst_value").val(b.attr("value"));
+				}
+                        }else if(b.hasClass("rel_id")){
+                                $("select#id_entity").val("rel");
+                        	$("input#id_id").val(b.attr("value"));
+                        };
+                };
+                $('tbody').on('click', '.btn', function (e) {
+                        table_btn($(this));
+                });
+
+	}
+);
+</script>
+{% endblock%}
+
+{% block container %}
+
+<div class="col-md-5" id="form" >
+
+<div class="panel panel-primary">
+
+<div class="panel-heading">{{model|capfirst}}</div>
+<div class="panel-body">
+
+<table class="table table-condensed">
+<tr><th class="col-sm-1"></th><td class="col-sm-3"></td></tr>
+<tr><th >ID</th><td><a href="/{{model}}/{{cluster.id}}">{{cluster.id}}</a></td></tr>
+<tr><th>Name</th><td>{{cluster.name}}</td></tr>
+<tr><th>Description</th><td><pre>{{cluster.description}}</pre></td></tr>
+<tr><th>Firstseen</th><td>{{cluster.firstseen}}</td></tr>
+</table>
+
+<button class="btn btn-default btn-sm btn-block btn-toggle" value="cluster_form">Edit {{modes|capfirst}}</button>
+<div class="cluster_form">
+<form method=post>{% csrf_token %}
+<table class="table table-condensed">
+<tr><th class="col-sm-1"></th><td class="col-sm-4"></td></tr>
+{{form.as_table}}
+</table>
+<input class="btn btn-primary btn-sm" type="submit" name="update" value="Update">
+<input class="btn btn-danger btn-sm" type="submit" name="delete" value="Delete">
+<br><br>
+<input class="btn btn-info btn-sm" type="submit" name="push_all" value="Push All Entity">
+<!--<input class="btn btn-warning btn-sm" type="submit" name="remove_all" value="Remove All Entity">-->
+<input class="btn btn-danger btn-sm" type="submit" name="delete_all" value="Delete All Entity">
+</form>
+</div>
+<hr>
+<a class="btn btn-primary btn-md " href="/visualize/subcluster/{{cluster.id}}">Visualize</a>
+<a class="btn btn-warning btn-md " href="/vis_anonymize/subcluster/{{cluster.id}}">Visualize(mask)</a>
+<a class="btn btn-info btn-md " href="/export/node/subcluster/{{cluster.id}}">Export Node</a>
+<a class="btn btn-info btn-md " href="/export/relation/subcluster/{{cluster.id}}">Export Relation</a>
+
+</div><!--/.panel-body-->
+
+</div><!--/.panel-->
+
+<div class="panel panel-primary">
+
+<div class="panel-heading">Create Node/Relation</div>
+<div class="panel-body">
+
+<ul class="nav nav-pills">
+  <li class="active"><a data-toggle="tab" href="#relform">Relation</a></li>
+  <li ><a data-toggle="tab" href="#templateform">Template</a></li>
+</ul>
+
+<div class="tab-content">
+
+<div class="tab-pane " id="templateform" >
+<form method=post>{% csrf_token %}
+<table class="table">
+<tr><th class="col-sm-1"></th><td class="col-sm-4"></td></tr>
+{{tform.as_table}}
+</table>
+<input class="btn btn-primary btn-md" type="submit" name="create_relation" value="Create">
+</form>
+</div><!--/#templateform-->
+
+<div class="tab-pane active" id="relform" >
+<form method=post>{% csrf_token %}
+<table class="table">
+<tr><th class="col-sm-2"></th><td class="col-sm-3"></td></tr>
+{{relform.as_table}}
+</table>
+<input class="btn btn-primary btn-md" type="submit" name="create" value="Create">
+</form>
+</div><!--/#relform-->
+
+</div><!--/.tab-content-->
+
+</div><!--/.panel-body-->
+
+</div><!--/.panel-->
+
+</div><!--/col-md-5-->
+
+<div id="list" class="col-md-7">
+
+<ul class="nav nav-pills">
+  <li class="active" ><a data-toggle="tab" href="#node">Node({{nodes|length}})</a></li>
+  <li ><a data-toggle="tab" href="#relation">Relation({{relations|length}})</a></li>
+  <li ><a data-toggle="tab" href="#cluster">Cluster({{cluster.cluster.all|length}})</a></li>
+</ul>
+
+<div class="tab-content">
+
+<div class="tab-pane active" id="node" >
+<table id="node_table" class="table table-condensed table-stripe table-hover">
+
+<thead><tr>
+<th class="col-sm-1">ID/Ref</th>
+<!--
+<th class="col-sm-1">Label</th>
+<th>Properties</th>
+-->
+<th >Node</th>
+<th>SubCluster/Cluster</th>
+</tr></thead>
+
+<tbody>
+
+{% for n in nodes %}
+<tr>
+<td>
+<a class="btn btn-info btn-sm" href="/node/{{n.id}}">{{n.id}}</a>
+<a class="btn btn-default btn-sm">{{n.ref}}</a>
+<!--
+<br><br>
+<button class="btn btn-default btn-xs node_id to_e" value="{{n.id}}">E</button>
+<button class="btn btn-default btn-xs node_id to_s" value="{{n.key_property.value}}">S</button>
+<button class="btn btn-default btn-xs node_id to_d" value="{{n.key_property.value}}">D</button>
+-->
+</td>
+<td><table class="table table-condensed table-striped">
+<tr><th>{{n.label}} {{n.key_property.key.name}}</th></tr>
+<tr><td>{{n.key_property.value}}</td></tr>
+</table></td>
+<td><table >
+{% for s in n.subcluster.all %}
+<tr><td><a href="/subcluster/{{s.id}}">{{s.name}}</a></td>
+<td><table>
+{% for c in s.cluster.all %}
+<tr><td><a href="/cluster/{{c.id}}">{{c.name}}</a></td></tr>
+{% endfor %}
+</table></td>
+</tr>
+{% endfor %}
+</table></td>
+</tr>
+{% endfor %}
+</tbody>
+
+</table>
+
+
+</div><!--/#node-->
+
+<div class="tab-pane" id="relation" >
+
+<table id="relation_table" class="table table-condensed table-stripe table-hover">
+<thead>
+<th >ID/Ref</th>
+<!--
+<th class="col-sm-1">Src Node</th>
+<th class="col-sm-1">Dst Node</th>
+-->
+<th class="col-sm-3">Relation</th>
+<th class="col-sm-3">SubCluster/Cluster</th>
+</thead>
+<tbody>
+{% for r in relations %}
+<tr>
+<td>
+<a class="btn btn-info btn-sm" href="/relation/{{r.id}}">{{r.id}}</a>
+<a class="btn btn-default btn-sm" >{{r.ref}}</a>
+<!--
+<br><br>
+<button class="btn btn-default btn-sm rel_id" value="{{r.id}}">E</button>
+-->
+</td>
+<td><table class="table table-condensed table-striped">
+<tr><th>{{r.src.key_property.key.name}}</th><td>{{r.src.key_property.value}}</td></tr>
+<tr><td>{{r.type.name}}</td></tr>
+<tr><th>{{r.dst.key_property.key.name}}</th><td>{{r.dst.key_property.value}}</td></tr>
+</table></td>
+<!--
+<td><table>
+{% for p in r.properties.all %}
+<tr><td><{{p.key.name}}</td><td>{{p.value}}</td></tr>
+{% endfor %}
+</table></td>
+-->
+<td><table class="table">
+{% for s in r.subcluster.all %}
+<tr><td><a href="/subcluster/{{s.id}}">{{s.name}}</a></td>
+<td><table class="table">
+{% for c in s.cluster.all %}
+<tr><td><a href="/cluster/{{c.id}}">{{c.name}}</a></td></tr>
+{% endfor %}</table></td>
+{% endfor %}</table></td>
+</tr>
+{% endfor %}
+<tbody>
+</table>
+
+</div><!--/#relation-->
+
+<div class="tab-pane" id="cluster" >
+
+<table id="cluster_table" class="table table-condensed table-stripe table-hover">
+<thead>
+<th class="col-md-1">ID</th>
+<th class="col-md-2">Name</th>
+<th class="col-md-4">Description</th>
+<th class="col-md-1">Firstseen</th>
+</thead>
+<tbody>
+{% for c in cluster.cluster.all %}
+<tr>
+<td><a class="btn btn-info btn-sm" href="/cluster/{{c.id}}">{{c.id}}</td>
+<td>{{c.name}}</td>
+<td><pre>{{c.description}}</pre></td>
+<td>{{c.firstseen|date:"Y-m-d H:i"}}</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+
+</div><!--/#cluster-->
+
+</div><!--/tab-content-->
+
+
+</div><!--/.col-md-8-->
+
+{% endblock %}

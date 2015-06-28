@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+
+{% block title %}
+<title>Delete</title>
+{% endblock %}
+
+{% block jquery %}
+<script>
+$(document).ready(
+	function(){
+                $('#subcluster_table').DataTable({"order":[0, 'desc']});
+                $('#node_table').DataTable({"order":[0, 'desc']});
+                $('#relation_table').DataTable({"order":[0, 'desc']});
+                $('#reltemplate_table').DataTable({"order":[0, 'desc']});
+		$('#id_firstseen').datetimepicker({
+			format:'Y-m-d H:i'
+		});
+	}
+);
+</script>
+{% endblock%}
+
+{% block container %}
+
+<div class="col-md-4" id="form" >
+
+<div class="panel panel-primary">
+
+<div class="panel-heading">Delete</div>
+<div class="panel-body">
+<h4>Are you sure?</h4>
+<form method=post>{% csrf_token %}
+<input class="btn btn-primary btn-md" type="submit" name="return" value="Return">
+<input class="btn btn-danger btn-md" type="submit" name="delete" value="Delete">
+</form>
+
+</div><!--/.panel-body-->
+
+</div><!--/.panel-->
+
+<div class="panel panel-primary">
+
+<div class="panel-heading">Target</div>
+<div class="panel-body">
+<table class="table">
+<tbody>
+<tr><th class="col-md-1"></th><td class="col-md-3"></td></tr>
+<tr><th>Model</th><td>{{model|capfirst}}</td></tr>
+<tr><th>ID</th><td>{{target.id}}</td></tr>
+{% if target.name %}
+<tr><th>Name</th><td>{{target.name}}</td></tr>
+{% else %}
+<tr><th>Name</th><td>{{target}}</td></tr>
+{% endif %}
+{% if target.description %}
+<tr><th>Description</th><td><pre>{{target.description}}</pre></td></tr>
+{% endif %}
+</tbody>
+</table>
+</div><!--/.panel-body-->
+
+</div><!--/.panel-->
+
+</div><!--/#form-->
+
+<div id="list" class="col-md-8">
+
+<div class="panel panel-primary">
+
+<div class="panel-heading">Related</div>
+<div class="panel-body">
+
+<ul class="nav nav-pills">
+{% if sc %}<li ><a data-toggle="tab" href="#subcluster">SubCluster</a></li>{% endif %}
+{% if node %}<li ><a data-toggle="tab" href="#node">Node</a></li>{% endif %}
+{% if relation %}<li ><a data-toggle="tab" href="#relation">Relation({{relation|length}})</a></li>{% endif %}
+</ul>
+
+<div class="tab-content">
+
+{% if sc %}
+<div class="tab-pane" id="subcluster" >
+<table id="subcluster_table" class="table table-condensed table-hover table-striped">
+<thead><tr >
+<th>ID</th>
+<th>Name</th>
+</tr></thead>
+<tbody>
+{% for s in sc %}
+<tr>
+<td>{{s.id}}</td>
+<td>{{s.name}}</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</div><!--/#subcluster-->
+{% endif %}
+
+{% if node %}
+<div class="tab-pane" id="node" >
+<table id="node_table" class="table table-condensed table-hover table-striped">
+<thead><tr >
+<th>ID</th>
+<th>Label</th>
+<th>Key</th>
+<th>Value</th>
+</tr></thead>
+<tbody>
+{% for n in node %}
+<tr>
+<td>{{n.id}}</td>
+<td>{{n.label}}</td>
+<td>{{n.key_property.key.name}}</td>
+<td>{{n.key_property.value}}</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</div><!--/#node-->
+{% endif %}
+
+{% if relation %}
+<div class="tab-pane" id="relation" >
+<table id="relation_table" class="table table-condensed table-hover table-striped">
+<thead><tr >
+<th>ID</th>
+<th>Src</th>
+<th>Relation</th>
+<th>Dst</th>
+</tr></thead>
+<tbody>
+{% for r in relation %}
+<tr>
+<td>{{r.id}}</td>
+<td>{{r.src.key_property.value}}</td>
+<td>{{r.type}}</td>
+<td>{{r.dst.key_property.value}}</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</div><!--/#node-->
+{% endif %}
+
+
+</div><!--/.tab-content-->
+
+</div><!--/.panel-body-->
+
+</div><!--/.panel-->
+
+</div><!--/#list-->
+
+{% endblock %}

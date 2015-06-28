@@ -1,0 +1,42 @@
+{% extends "visualize_base.html" %}
+
+{% block options %}
+var options ={
+	"configure": {
+		"enabled": false,
+		"filter": 'nodes,edges',
+		"showButton": true
+  	},
+	"autoResize": true,
+	"nodes": {
+		"borderWidth": 0.1,
+		"scaling":{
+			"label": true,
+		},
+		//"shadow": true,
+	},
+	"edges":{
+		"arrows": 'to',
+		"scaling":{
+			"label": true,
+		},
+		//"shadow": true,
+		"smooth": {
+			"roundness": 0.1
+		},
+	},
+	"interaction":{
+		"hideEdgesOnDrag": false,
+		"hover": false,
+		"keyboard": true,
+	},
+	"physics": {
+		"solver": "forceAtlas2Based",
+		//"solver": "barnesHut",
+		"minVelocity":1,
+	},
+	"manipulation": {
+		"enabled": false,
+	},
+};
+{% endblock%}

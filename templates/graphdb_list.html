@@ -1,0 +1,260 @@
+{% extends "db_list.html" %}
+
+{% block title %}
+<title>Graph DB</title>
+{% endblock %}
+
+{% block jquery %}
+<script>
+$(document).ready(
+        function(){
+                $('#node_table').DataTable({"order":[0, 'desc']});
+                $('#relation_table').DataTable({"order":[1, 'desc']});
+                $('#index_table').DataTable({"order":[1, 'desc']});
+                $(".entity_buttons").toggle();
+                $('.btn-toggle').click(function(e){
+                        e.preventDefault();
+                        if($(this).attr("value")=="entity_buttons"){
+                                $(".entity_buttons").toggle();
+                        };
+                });
+		function table_btn(b){
+			if(b.hasClass("node_ref")){
+                	       	$("select#id_entity").val("node");
+			}else if(b.hasClass("rel_ref")){
+        	               	$("select#id_entity").val("rel");
+			};
+			$("input#id_id").val(b.text());
+		};
+		$('tbody').on('click', '.btn', function (e) {
+			table_btn($(this));
+                });
+	}
+);
+</script>
+{% endblock %}
+
+{% block container %}
+
+<div class="col-md-4" id="form" >
+
+<div class="panel panel-info">
+
+<div class="panel-heading">Create Node/Relation on Graph DB</div>
+
+<div class="panel-body">
+<form method=post>{% csrf_token %}
+<table >
+{{form.as_table}}
+</table>
+<input class="btn btn-primary btn-sm" type="submit" name="create" value="Create">
+<br><br>
+<input class="btn btn-info btn-sm" type="submit" name="create_index" value="Create Index on Graph DB">
+<input class="btn btn-warning btn-sm" type="submit" name="delete_index" value="Delete Index on Graph DB">
+</form>
+</div>
+
+</div><!--/panel-->
+
+<div class="panel panel-info">
+
+<div class="panel-heading">
+Manipulate Entity
+</div>
+
+<div class="panel-body">
+<form method=post>{% csrf_token %}
+<table >
+{{eform.as_table}}
+</table>
+<input class="btn btn-info btn-sm" type="submit" name="add_property" value="Add Property">
+<input class="btn btn-warning btn-sm" type="submit" name="remove_property" value="Remove Property">
+<br><br>
+<input class="btn btn-info btn-sm" type="submit" name="push" value="Push to DB">
+<input class="btn btn-danger btn-sm" type="submit" name="delete" value="Delete from Graph">
+<br><br>
+<input class="btn btn-info btn-sm" type="submit" name="push_all" value="Push All">
+<input class="btn btn-danger btn-sm" type="submit" name="delete_all" value="Delete All">
+</form>
+</div><!--/.panel-body-->
+
+</div><!--/.panel-->
+
+</div><!--/col-md-4-->
+
+<div id="list" class="col-md-8">
+
+<ul class="nav nav-pills">
+  <li class="active"><a data-toggle="tab" href="#nodes">Nodes({{nodes|length}})</a></li>
+  <li><a data-toggle="tab" href="#relations">Relations({{relations|length}})</a></li>
+  <li><a data-toggle="tab" href="#indexes">Indexes({{indexes|length}})</a></li>
+</ul>
+
+<div class="tab-content">
+
+<div class="tab-pane active" id="nodes" >
+
+<table id="node_table" class="table table-condensed table-hover table-striped">
+
+<thead>
+<tr>
+<th class="col-sm-1">Ref</th>
+<th class="col-sm-2">Labels</th>
+<th class="col-sm-4">Properties</th>
+<th class="col-sm-1">Degree</th>
+</tr>
+</thead>
+
+<tbody>
+
+{% for n in nodes %}
+<tr>
+<td><button class="btn btn-info btn-sm btn-ref node_ref">{{n.ref}}</td>
+<td><table class="table table-condensed">
+{% for l in n.labels %}
+<tr><td>{{l}}</td></tr>
+{% endfor %}
+</table></td>
+<td><table class="table table-condensed">
+{% for k, v in n.properties.items %}
+<tr>
+<th class="col-sm-1">{{k}}</th>
+<td class="col-sm-3">
+{% if k == "cluster" or k == "subcluster" %}
+{% for i in v %}
+{{i}}
+{% endfor %}
+{% else %}
+{{v}}
+{% endif %}
+</td>
+</tr>
+{% endfor %}
+</table></td>
+<td>{{n.degree}}</td>
+</tr>
+{% endfor %}
+</tbody>
+
+</table>
+
+</div><!--/nodes-->
+
+
+<div class="tab-pane" id="relations" >
+
+<table id="relation_table" class="table table-condensed table-hover table-striped">
+
+<thead>
+<tr>
+<th class="col-sm-3">Source Node</th>
+<th class="col-sm-2">Relation</th>
+<th class="col-sm-3">Destination Node</th>
+</tr>
+</thead>
+
+<tbody>
+{% for r in relations %}
+<tr>
+
+<td><table class="table table-condensed">
+<tr><th>ref</th>
+<td><button class="btn btn-info btn-sm btn-ref node_ref">{{r.src.ref}}</td>
+<tr>
+<th>label</th>
+<td><table class="table table-condensed">
+{% for l in r.src.labels %}
+<tr><td>{{l}}</td></tr>
+{% endfor %}
+</table></td>
+</tr>
+{% for k,v in r.src.properties.items %}
+<tr><th>{{k}}</th>
+<td>
+{% if k == "cluster" or k == "subcluster" %}
+{% for i in v %}
+{{i}}
+{% endfor %}
+{% else %}
+{{v}}
+{% endif %}
+</td>
+</tr>
+{% endfor %}
+</table></td>
+
+<td><table class="table table-condensed">
+<tr><th>ref</th>
+<td><button class="btn btn-info btn-sm btn-ref rel_ref">{{r.rel.ref}}</td>
+<tr><th>type</th><td>{{r.rel.type}}</td></tr>
+{% for k,v in r.rel.properties.items %}
+<tr><th>{{k}}</th>
+<td>
+{% if k == "cluster" or k == "subcluster" %}
+{% for i in v %}
+{{i}}
+{% endfor %}
+{% else %}
+{{v}}
+{% endif %}
+</td>
+</tr>
+{% endfor %}
+</table></td>
+
+<td><table class="table table-condensed">
+<tr><th>ref</th>
+<td><button class="btn btn-info btn-sm btn-ref node_ref">{{r.dst.ref}}</td>
+<tr>
+<th>label</th>
+<td><table class="table table-condensed">
+{% for l in r.dst.labels %}
+<tr><td>{{l}}</td></tr>
+{% endfor %}
+</table></td>
+</tr>
+{% for k,v in r.dst.properties.items %}
+<tr><th>{{k}}</th>
+<td>
+{% if k == "cluster" or k == "subcluster" %}
+{% for i in v %}
+{{i}}
+{% endfor %}
+{% else %}
+{{v}}
+{% endif %}
+</td>
+</tr>
+{% endfor %}
+</table></td>
+</tr>
+{% endfor %}
+</tbody>
+
+</table>
+
+</div><!--/relations-->
+
+<div id="indexes" class="tab-pane">
+<table id="index_table" class="table table-condensed table-hover table-striped">
+<thead><tr><th>Label</th><th>Key</th></tr></thead>
+<tbody>
+{% for index in indexes %}
+<tr>
+<td>{{index.label}}</td>
+<td><table class="table table-condensed">
+{% for k in index.key %}
+<tr><td>{{k}}</td></tr>
+{% endfor %}
+</table></td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+
+</div><!--/tab-content-->
+
+</div><!--col-md-8-->
+
+{% endblock %}

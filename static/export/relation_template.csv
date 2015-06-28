@@ -1,0 +1,2 @@
+src_label,src_key,src_value,rel_type,property_key,property_value,dst_label,dst_key,dst_value,subcluster,cluster
+Host,name,www.example.com,has_domain,,,Domain,name,example.com,huga,hoge
