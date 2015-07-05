@@ -53,7 +53,7 @@ $(document).ready(
 
 </div><!--/.panel-->
 
-{% if model %}
+{% if model == "node" or model == "relation" %}
 <div class="panel panel-primary">
 
 <div class="panel-heading">Import/Export {{model|capfirst}} </div>
@@ -86,7 +86,7 @@ $(document).ready(
 <br>
 <br>
 <input class="btn btn-info btn-md" type="submit" name="push_all" value="Push All">
-<input class="btn btn-danger btn-md" type="submit" name="delete_all" value="Delete All">
+<a class="btn btn-danger btn-md" href="/delete/{{model}}">Delete All</a>
 </form>
 </div><!--/.panel-body-->
 

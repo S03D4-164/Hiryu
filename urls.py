@@ -6,6 +6,7 @@ from views.graphdb import graphdb_view
 from views.visualize import visualize_view, vis_anonymize
 from views.delete import delete_view
 from views.export import export_relation, export_node
+from views.stix_export import export_stix
 from views.cluster import cluster_list, cluster_view
 from views.subcluster import subcluster_list, subcluster_view
 from views.node import node_view, node_list
@@ -37,4 +38,5 @@ urlpatterns = patterns('',
 	url(r'^subcluster/(?P<id>\d+)$', subcluster_view),
 	url(r'^node/(?P<id>\d+)$', node_view),
 	url(r'^relation/(?P<id>\d+)$', relation_view),
+	url(r'^export/stix/(?P<model>\w+)/(?P<id>\d+)$', export_stix),
 )

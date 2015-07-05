@@ -3,7 +3,7 @@ from django.template import RequestContext
 
 from ..models import *
 from ..forms import *
-from ..postprocess import process_node
+from ..tasks import process_node
 from db import push_all_to_graph, get_node_on_db, relform_to_localdb
 from graph import graph_init
 
@@ -45,7 +45,6 @@ def subcluster_view(request, id):
 	nodes = Node.objects.filter(subcluster=subcluster)
 	relations = Relation.objects.filter(subcluster=subcluster)
 	form = SubClusterForm(instance=subcluster)
-	eform = EntityForm()
         tform = TemplateForm()
         relform = RelCreateForm()
 	graph = graph_init()

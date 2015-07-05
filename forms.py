@@ -150,11 +150,12 @@ class EntityForm(forms.Form):
 			("rel","Relation")
 		)
 	)
-	id = forms.IntegerField(min_value=0, required=True)
+	id = forms.IntegerField(min_value=0, required=False)
 	key = forms.ModelChoiceField(queryset=PropertyKey.objects.all().order_by("name"), required=False, label="Property Key")
 	new_key = forms.CharField(max_length="200", required=False, label="New Key")
 	value = forms.CharField(max_length="200", required=False, label="Property Value")
 	subcluster = forms.ModelMultipleChoiceField(queryset=SubCluster.objects.all().order_by("name"))
+	postprocess = forms.BooleanField(required=False)
 	def __init__(self, *args, **kwargs):
 		super(EntityForm, self).__init__(*args, **kwargs)
 		self.fields["subcluster"].required = False

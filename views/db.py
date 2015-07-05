@@ -7,6 +7,7 @@ from ..forms import *
 from ..models import *
 from graph import graph_init
 from csv_import import import_node, import_relation
+from multiprocessing import Process, Queue
 
 def set_properties_to_node(node, properties):
 	cluster = []
@@ -244,7 +245,7 @@ def db_view(request, entity=None):
 				src, dst, rel = relform_to_localdb(form, graph)
 				postprocess = form.cleaned_data["postprocess"]
 				if postprocess:
-					from ..postprocess import process_node
+					from ..tasks import process_node
 					if src:
 						process_node.delay(src)
 					if dst:
@@ -265,29 +266,23 @@ def db_view(request, entity=None):
 			if eform.is_valid():
 				delete_entity_from_db(eform)
 		elif "push_all" in request.POST:
-			#push_all_to_graph(nodes, relations, graph)
-			if not entity or entity == "node":
-				nodes = Node.objects.all()
-		        	for node in nodes:
-                			get_node_on_graph(node, graph)
-			if not entity == "relation":
-				relations = Relation.objects.all()
-        			for relation in relations:
-                			get_relation_on_graph(relation, graph)
+			from ..tasks import push_db_to_graph
+			push_db_to_graph.delay(entity)
 		elif "delete_all" in request.POST:
 			if entity == "node":
-				return redirect("/delete/node")
+				return redirect("/delete/node/")
 			elif entity == "relation":
-				return redirect("/delete/relation")
+				return redirect("/delete/relation/")
 			else:
-				return redirect("/delete/db")
+				return redirect("/delete/db/")
 	nodes = None
 	if not entity or entity == "node":
 		nodes = Node.objects.all().order_by("-id")
 	relations = None
 	if not entity or entity == "relation":
 		relations = Relation.objects.all().order_by("-id")
-	#indexes = NodeIndex.objects.all().order_by("-id")
+	if not entity:
+		entity = "db"
 	rc = RequestContext(request, {
 		"form":form,
 		"iform":iform,
