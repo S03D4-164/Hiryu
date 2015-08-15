@@ -6,6 +6,7 @@ from ..forms import *
 from graph import graph_init
 from db import push_all_to_graph
 from subcluster import create_subcluster
+from ioc_import import import_ioc
 
 def cluster_list(request):
 	form = ClusterForm()
@@ -40,6 +41,7 @@ def cluster_view(request, id):
 	relations = Relation.objects.filter(subcluster__cluster=cluster).distinct()
 	form = ClusterForm(instance=cluster)
 	scform = SubClusterForm()
+	iform = UploadFileForm()
 	if request.method == "POST":
 		if "update" in request.POST:
 			form = ClusterForm(request.POST)
@@ -63,9 +65,14 @@ def cluster_view(request, id):
 				s = create_subcluster(scform)
 				if s:
 					s.cluster.add(cluster)
+		elif "import_ioc" in request.POST:
+                        iform = UploadFileForm(request.POST, request.FILES)
+                        if iform.is_valid():
+                        	import_ioc(request.FILES['file'], cluster)
 	rc = RequestContext(request, {
                 "form":form,
                 "scform":scform,
+                "iform":iform,
                 "cluster":cluster,
                 "subcluster":subcluster,
                 "nodes":nodes,

@@ -74,10 +74,6 @@ $(document).ready(
 <hr>
 <a class="btn btn-primary btn-md " href="/visualize/cluster/{{cluster.id}}">Visualize</a>
 <a class="btn btn-warning btn-md " href="/vis_anonymize/cluster/{{cluster.id}}">Visualize(mask)</a>
-<br><br>
-<a class="btn btn-info btn-md " href="/export/node/cluster/{{cluster.id}}">Export Node</a>
-<a class="btn btn-info btn-md " href="/export/relation/cluster/{{cluster.id}}">Export Relation</a>
-<a class="btn btn-info btn-md " href="/export/stix/cluster/{{cluster.id}}">Export STIX</a>
 
 </div><!--/.panel-body-->
 
@@ -97,6 +93,26 @@ $(document).ready(
 </div><!--/.panel-body-->
 
 </div><!--/.panel-->
+
+<div class="panel panel-primary">
+
+<div class="panel-heading">Import/Export {{model|capfirst}} </div>
+<div class="panel-body">
+
+<a class="btn btn-info btn-md " href="/export/node/cluster/{{cluster.id}}">Export Node</a>
+<a class="btn btn-info btn-md " href="/export/relation/cluster/{{cluster.id}}">Export Relation</a>
+<a class="btn btn-info btn-md " href="/export/stix/cluster/{{cluster.id}}">Export STIX</a>
+<hr>
+<form enctype="multipart/form-data" method=post>{% csrf_token %}
+<table >
+{{iform.as_table}}
+</table>
+<input class="btn btn-warning btn-md" type="submit" name="import_ioc" value="Import IOC">
+</form>
+</div><!--/.panel-body-->
+
+</div><!--/.panel-->
+
 
 </div><!--/.col-md-4-->
 
@@ -126,7 +142,7 @@ $(document).ready(
 <tr>
 <td><a class="btn btn-info btn-sm"href="/subcluster/{{s.id}}">{{s.id}}</a></td>
 <td>{{s.name}}</td>
-<td><pre>{{s.description}}</pre></td>
+<td><pre>{{s.description|truncatechars:100}}</pre></td>
 <td><table>
 {% for c in s.cluster.all %}
 <tr><td><a href="/cluster/{{c.id}}">{{c.name}}</a></td></tr>
