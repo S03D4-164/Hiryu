@@ -10,6 +10,7 @@ from ioc_import import import_ioc
 
 def cluster_list(request):
 	form = ClusterForm()
+	iform = UploadFileForm()
 	if request.method == "POST":
 		if "create" in request.POST:
 			form = ClusterForm(request.POST)
@@ -26,9 +27,14 @@ def cluster_list(request):
 					if firstseen:
 						c.firstseen = firstseen
 					c.save()
+		elif "import_ioc" in request.POST:
+                        iform = UploadFileForm(request.POST, request.FILES)
+                        if iform.is_valid():
+                        	import_ioc(request.FILES['file'])
 	cluster = Cluster.objects.all().order_by("-id")
 	rc = RequestContext(request, {
                 "form":form,
+                "iform":iform,
                 "cluster":cluster,
         })
         return render_to_response("cluster_list.html", rc)

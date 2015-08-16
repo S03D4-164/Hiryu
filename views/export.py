@@ -15,7 +15,6 @@ def export_node(request, model=None, id=None):
                 node = Node.objects.filter(subcluster__cluster__id=id)
 	else:
                 node = Node.objects.all()
-		print node
 	
 	fieldnames = (
 		"node_label",

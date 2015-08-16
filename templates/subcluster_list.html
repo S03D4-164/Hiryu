@@ -63,7 +63,7 @@ $(document).ready(
 <tr><td><a href="/cluster/{{c.id}}">{{c.name}}</a></td></tr>
 {% endfor%}
 </table></td>
-<td><pre>{{s.description}}</pre></td>
+<td><pre>{{s.description|truncatechars:100}}</pre></td>
 <td>{{s.firstseen|date:"Y-m-d H:i"}}</td>
 </tr>
 {% endfor %}
