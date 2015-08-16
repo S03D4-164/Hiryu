@@ -41,7 +41,7 @@ class PropertyKey(models.Model):
 
 class Property(models.Model):
 	key = models.ForeignKey(PropertyKey)
-	value = models.CharField(max_length=200)
+	value = models.CharField(max_length=2000)
         def __unicode__(self):
                 return str(self.key.name + " - " + self.value)
 	class Meta:
@@ -54,6 +54,14 @@ class NodeIndex(models.Model):
                 return str(self.label.name + " " + self.property_key.name)
 	class Meta:
 		unique_together = (("label", "property_key"),)
+
+class IOCTerm(models.Model):
+	#text = models.CharField(max_length=200, unique=True)
+	text = models.CharField(max_length=200)
+	index = models.ForeignKey(NodeIndex, blank=True, null=True)
+	allow_import = models.BooleanField(default=False)
+        def __unicode__(self):
+                return self.text
 
 class Node(models.Model):
 	label = models.ForeignKey(NodeLabel)

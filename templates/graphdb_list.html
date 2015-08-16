@@ -21,10 +21,11 @@ $(document).ready(
 		function table_btn(b){
 			if(b.hasClass("node_ref")){
                 	       	$("select#id_entity").val("node");
+                                $("input#id_id").val(b.attr("value"));
 			}else if(b.hasClass("rel_ref")){
         	               	$("select#id_entity").val("rel");
+                                $("input#id_id").val(b.attr("value"));
 			};
-			$("input#id_id").val(b.text());
 		};
 		$('tbody').on('click', '.btn', function (e) {
 			table_btn($(this));
@@ -47,7 +48,7 @@ $(document).ready(
 <table >
 {{form.as_table}}
 </table>
-<input class="btn btn-primary btn-sm" type="submit" name="create" value="Create">
+<input class="btn btn-primary btn-md" type="submit" name="create" value="Create">
 <br><br>
 <input class="btn btn-info btn-sm" type="submit" name="create_index" value="Create Index on Graph DB">
 <input class="btn btn-warning btn-sm" type="submit" name="delete_index" value="Delete Index on Graph DB">
@@ -67,14 +68,14 @@ Manipulate Entity
 <table >
 {{eform.as_table}}
 </table>
-<input class="btn btn-info btn-sm" type="submit" name="add_property" value="Add Property">
-<input class="btn btn-warning btn-sm" type="submit" name="remove_property" value="Remove Property">
+<input class="btn btn-info btn-md" type="submit" name="add_property" value="Add Property">
+<input class="btn btn-warning btn-md" type="submit" name="remove_property" value="Remove Property">
 <br><br>
-<input class="btn btn-info btn-sm" type="submit" name="push" value="Push to DB">
-<input class="btn btn-danger btn-sm" type="submit" name="delete" value="Delete from Graph">
+<input class="btn btn-info btn-md" type="submit" name="push" value="Push to DB">
+<input class="btn btn-danger btn-md" type="submit" name="delete" value="Delete from Graph">
 <br><br>
-<input class="btn btn-info btn-sm" type="submit" name="push_all" value="Push All">
-<input class="btn btn-danger btn-sm" type="submit" name="delete_all" value="Delete All">
+<input class="btn btn-info btn-md" type="submit" name="push_all" value="Push All">
+<input class="btn btn-danger btn-md" type="submit" name="delete_all" value="Delete All">
 </form>
 </div><!--/.panel-body-->
 
@@ -109,7 +110,10 @@ Manipulate Entity
 
 {% for n in nodes %}
 <tr>
-<td><button class="btn btn-info btn-sm btn-ref node_ref">{{n.ref}}</td>
+<td>
+<a class="btn btn-default btn-xs node_ref" value="{{n.ref}}"><span class="glyphicon glyphicon-chevron-left"></span></a>
+<a class="btn btn-info btn-sm" href="/ref/{{n.ref}}">{{n.ref}}</a>
+</td>
 <td><table class="table table-condensed">
 {% for l in n.labels %}
 <tr><td>{{l}}</td></tr>
@@ -122,7 +126,7 @@ Manipulate Entity
 <td class="col-sm-3">
 {% if k == "cluster" or k == "subcluster" %}
 {% for i in v %}
-{{i}}
+{{i}}<br>
 {% endfor %}
 {% else %}
 {{v}}
@@ -159,7 +163,10 @@ Manipulate Entity
 
 <td><table class="table table-condensed">
 <tr><th>ref</th>
-<td><button class="btn btn-info btn-sm btn-ref node_ref">{{r.src.ref}}</td>
+<td>
+<a class="btn btn-default btn-xs node_ref" value="{{r.src.ref}}"><span class="glyphicon glyphicon-chevron-left"></span></a>
+<a class="btn btn-info btn-sm" href="/ref/{{r.src.ref}}">{{r.src.ref}}</a>
+</td>
 <tr>
 <th>label</th>
 <td><table class="table table-condensed">
@@ -185,7 +192,10 @@ Manipulate Entity
 
 <td><table class="table table-condensed">
 <tr><th>ref</th>
-<td><button class="btn btn-info btn-sm btn-ref rel_ref">{{r.rel.ref}}</td>
+<td>
+<a class="btn btn-default btn-xs rel_ref" value="{{r.rel.ref}}"><span class="glyphicon glyphicon-chevron-left"></span></a>
+<a class="btn btn-info btn-sm" href="/ref/{{r.rel.ref}}">{{r.rel.ref}}</a>
+</td>
 <tr><th>type</th><td>{{r.rel.type}}</td></tr>
 {% for k,v in r.rel.properties.items %}
 <tr><th>{{k}}</th>
@@ -204,7 +214,10 @@ Manipulate Entity
 
 <td><table class="table table-condensed">
 <tr><th>ref</th>
-<td><button class="btn btn-info btn-sm btn-ref node_ref">{{r.dst.ref}}</td>
+<td>
+<a class="btn btn-default btn-xs node_ref" value="{{r.dst.ref}}"><span class="glyphicon glyphicon-chevron-left"></span></a>
+<a class="btn btn-info btn-sm" href="/ref/{{r.dst.ref}}">{{r.dst.ref}}</a>
+</td>
 <tr>
 <th>label</th>
 <td><table class="table table-condensed">

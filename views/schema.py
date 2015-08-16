@@ -9,6 +9,7 @@ def schema_list(request):
 	graph = graph_init()
 	iform = IndexForm()
 	rtform = RelTemplateForm()
+	tform = IOCTermForm()
 	if request.method == "POST":
 		if "create_index" in request.POST:
 			iform = IndexForm(request.POST)
@@ -92,11 +93,26 @@ def schema_list(request):
 					type = type,
 					dst_index = dst_index,
 				)
+		elif "create_ioc" in request.POST:
+			tform = IOCTermForm(request.POST)
+			if tform.is_valid():
+				text = tform.cleaned_data["text"]
+				index = tform.cleaned_data["index"]
+				allow_import = tform.cleaned_data["allow_import"]
+				ioc, created = IOCTerm.objects.get_or_create(
+					text = text
+				)
+				if ioc:
+					ioc.index = index
+					ioc.allow_import = allow_import
+					ioc.save()
 	rc = RequestContext(request, {
                 "iform":iform,
                 "rtform":rtform,
+                "tform":tform,
 		"index":NodeIndex.objects.all(),
 		"reltemplate":RelationTemplate.objects.all(),
+		"iocterm":IOCTerm.objects.all(),
         })
         return render_to_response("schema_list.html", rc)
 

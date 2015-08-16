@@ -26,26 +26,27 @@ def metadata_to_subcluster(m, cluster):
 def ii_to_ni(ii):
 	search = ii.Context.attrib.get("search")
 	content = str(ii.Content).strip()
+	s, created = IOCTerm.objects.get_or_create(
+		text = search,
+	)
 	ni = None
-	if search == "FileItem/Md5sum":
-		if re.match("^[a-f,0-9]{32}$", content):
+	if s.index and s.allow_import:
+		ni = s.index
+	"""
+	if search == "PortItem/remoteIP":
+		if re.match("^([0-9]{1,3}\.){3}[0-9]{1,3}$", content):
 			ni = NodeIndex.objects.get(
-				label__name="Malware",
-				property_key__name="md5",
+				label__name="IP",
+				property_key__name="address",
 			)
-	elif search == "DnsEntryItem/RecordName":
+	elif search == "DnsEntryItem/RecordName" \
+		or search == "DnsEntryItem/Host":
 	        no_fetch_extract = tldextract.TLDExtract(suffix_list_url=False)
         	ext = no_fetch_extract(content)
 		if ext.domain and ext.suffix:
 			ni = NodeIndex.objects.get(
 				label__name="Host",
 				property_key__name="name",
-			)
-	elif search == "PortItem/remoteIP":
-		if re.match("^([0-9]{1,3}\.){3}[0-9]{1,3}$", content):
-			ni = NodeIndex.objects.get(
-				label__name="IP",
-				property_key__name="address",
 			)
 	elif search == "FileItem/FileName":
 		ni = NodeIndex.objects.get(
@@ -58,6 +59,13 @@ def ii_to_ni(ii):
 				label__name="Attacker",
 				property_key__name="email",
 			)
+	elif search == "FileItem/Md5sum":
+		if re.match("^[a-f,0-9]{32}$", content):
+			ni = NodeIndex.objects.get(
+				label__name="Malware",
+				property_key__name="md5",
+			)
+	"""
 	node = None
 	if ni:
 		node = {

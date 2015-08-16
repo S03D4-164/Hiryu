@@ -239,9 +239,9 @@ $(document).ready(
 -->
 </td>
 <td><table class="table table-condensed table-striped">
-<tr><td>{{r.src.key_property.value}}</td></tr>
+<tr><td><a href=/node/{{r.src.id}}>{{r.src.key_property.value}}</a></td></tr>
 <tr><td>{{r.type.name}}</td></tr>
-<tr><td>{{r.dst.key_property.value}}</td></tr>
+<tr><td><a href=/node/{{r.dst.id}}>{{r.dst.key_property.value}}</a></td></tr>
 </table></td>
 <!--
 <td><table>{% for p in r.properties.all %}

@@ -16,6 +16,7 @@ from myapp.plugins.hostname import parse_hostname
 from myapp.plugins.domain import whois_domain
 from myapp.plugins.ipaddress import whois_ip
 
+#@app.task(rate_limit='5/m')
 @app.task
 def process_node(node, subcluster = None):
 	nodetype = str(node.label.name + node.key_property.key.name).lower()

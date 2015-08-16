@@ -11,6 +11,7 @@ from views.cluster import cluster_list, cluster_view
 from views.subcluster import subcluster_list, subcluster_view
 from views.node import node_view, node_list
 from views.relation import relation_view, relation_list
+from views.ref import ref_view
 
 urlpatterns = patterns('',
 	url(r'^graphdb/$', graphdb_view),
@@ -38,5 +39,6 @@ urlpatterns = patterns('',
 	url(r'^subcluster/(?P<id>\d+)$', subcluster_view),
 	url(r'^node/(?P<id>\d+)$', node_view),
 	url(r'^relation/(?P<id>\d+)$', relation_view),
+	url(r'^ref/(?P<id>\d+)$', ref_view),
 	url(r'^export/stix/(?P<model>\w+)/(?P<id>\d+)$', export_stix),
 )

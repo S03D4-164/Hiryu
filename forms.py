@@ -195,3 +195,8 @@ class PropertyForm(forms.ModelForm):
 
 class UploadFileForm(forms.Form):
     file = forms.FileField()
+
+class IOCTermForm(forms.ModelForm):
+	class Meta:
+		model = IOCTerm
+		fields = ["text", "index", "allow_import"]
