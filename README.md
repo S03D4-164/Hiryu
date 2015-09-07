@@ -1,5 +1,5 @@
 # Hiryu
-Visualize tool for mainly threat analysis.
+Visualize tool for mainly threat analysis
 
 ## Quick Start
 1.  Install and Start Neo4j
@@ -40,7 +40,7 @@ Visualize tool for mainly threat analysis.
 4.  Put JavaScript Library into hiryu/static
 
          $ mkdir hiryu/static
-         $ cd static
+         $ cd hiryu/static
          $ mkdir css images js
          # Download following JavaScript Library and put files into above directory.
          # bootstrap
