@@ -36,8 +36,18 @@ Visualize tool for mainly threat analysis.
         # Create Django database
         $ python manage.py makemigrations hiryu
         $ python manage.py migrate
-      
-4.  Start Django and Celery
+
+4.  Put JavaScript Library into hiryu/static
+
+         $ mkdir hiryu/static
+         $ cd static
+         $ mkdir css images js
+         # Download following JavaScript Library and put files into above directory.
+         # bootstrap
+         # Datatables
+         # vis.js
+
+5.  Start Django and Celery
 
         $ celery -A hiryu worker -l info
         $ python manage.py runserver
