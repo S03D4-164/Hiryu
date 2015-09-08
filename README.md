@@ -11,11 +11,12 @@ Hiryu is less powerful than these tools, however, it can store mostly schemaless
 ## Quick Start
 1.  Install and Start Neo4j
 
-  Download Neo4j (I tested only Community edition) from neo4j.com and read "Installing Neo4j" carefully.
+  Download Neo4j from neo4j.com and read "Installing Neo4j" carefully.
 
 2.  Install Python Package
 
   Set up virtualenv and install python packages.
+  
       # Create virtualenv and activate
       $ virtualenv venv
       $ cd venv
@@ -31,14 +32,18 @@ Hiryu is less powerful than these tools, however, it can store mostly schemaless
         $ django-admin startproject myproject
         $ cd myproject
         
-        # Please edit myproject/settings.py
+        # Install Hiryu
+        $ git clone https://github.com/S03D4-164/Hiryu.git hiryu
+        
+        # Edit myproject/settings.py
         # 1. Add hiryu to INSTALLED_APPS
         # 2. Edit DATABASES (postgresql is recommended)
         # 3. Add line => NEO4J_AUTH="<neo4j user>:<neo4j password>" 
         
-        # Install Hiryu
-        $ git clone https://github.com/S03D4-164/Hiryu.git hiryu
-      
+        # Edit myproject/urls.py
+        # 1. Add import => from hiryu import urls
+        # 2. Add urlpatterns => url(r'^', include(urls)),
+        
         # Create Django database
         $ python manage.py makemigrations hiryu
         $ python manage.py migrate
@@ -46,13 +51,12 @@ Hiryu is less powerful than these tools, however, it can store mostly schemaless
 4.  Put JavaScript Library into hiryu/static
 
          $ cd hiryu/static
-         $ mkdir css images js
          # Download following JavaScript Library and put files into above directory.
          # bootstrap
          # Datatables
          # vis.js
 
-5.  Start Django and Celery
+5.  Start Django and Celery in project directory
 
-        $ celery -A hiryu.tasks worker -l info
+        $ celery -A hiryu.tasks worker -l info -f hiryu.log -D
         $ python manage.py runserver
