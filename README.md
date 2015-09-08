@@ -1,15 +1,21 @@
 # Hiryu
-Visualize tool for mainly threat analysis
+Visualization tool for mainly threat analysis
+
+## Introduction
+I created this tool to organize APT campaign information and to visualize relations of IOC.
+
+There are already some great tools such as Maltego, MANTIS Framework created by siemense...
+
+Hiryu is less powerful than these tools, however, it can store mostly schemaless node and relation on local DB, and can use Neo4j GraphDB as backend.
 
 ## Quick Start
 1.  Install and Start Neo4j
 
-  Please read "Installing Neo4j" on neo4j.com.
+  Download Neo4j (I tested only Community edition) from neo4j.com and read "Installing Neo4j" carefully.
 
 2.  Install Python Package
 
   Set up virtualenv and install python packages.
-  
       # Create virtualenv and activate
       $ virtualenv venv
       $ cd venv
@@ -39,7 +45,6 @@ Visualize tool for mainly threat analysis
 
 4.  Put JavaScript Library into hiryu/static
 
-         $ mkdir hiryu/static
          $ cd hiryu/static
          $ mkdir css images js
          # Download following JavaScript Library and put files into above directory.
@@ -49,5 +54,5 @@ Visualize tool for mainly threat analysis
 
 5.  Start Django and Celery
 
-        $ celery -A hiryu worker -l info
+        $ celery -A hiryu.tasks worker -l info
         $ python manage.py runserver
