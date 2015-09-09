@@ -33,8 +33,10 @@ def whois_ip(ip, subcluster = None):
                                                         key = pk,
                                                         value = v,
                                                 )
-                                                rel.properties.add(p)
-
+						try:
+                                                	rel.properties.add(p)
+						except:
+							pass
 				if rel and subcluster:
 					rel.subcluster.add(subcluster)
 					rel.save()
