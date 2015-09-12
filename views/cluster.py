@@ -30,7 +30,10 @@ def cluster_list(request):
 		elif "import_ioc" in request.POST:
                         iform = UploadFileForm(request.POST, request.FILES)
                         if iform.is_valid():
-                        	import_ioc(request.FILES['file'])
+                        	sc = import_ioc(request.FILES['file'])
+				if sc:
+					return redirect("/subcluster/" + str(sc.id))
+
 	cluster = Cluster.objects.all().order_by("-id")
 	rc = RequestContext(request, {
                 "form":form,

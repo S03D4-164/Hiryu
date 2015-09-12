@@ -51,8 +51,10 @@ def hostname_rel(hostname, relname, dst, subcluster):
   		     	dst = dst,
         	)
 		if rel and subcluster:
- 			rel.subcluster.add(subcluster)
-                	rel.save()
-                	dst.subcluster.add(subcluster)
-                	dst.save()
+			if not subcluster in rel.subcluster.all():
+	 			rel.subcluster.add(subcluster)
+        	        	rel.save()
+			if not subcluster in dst.subcluster.all():
+            		    	dst.subcluster.add(subcluster)
+                		dst.save()
 	return rel

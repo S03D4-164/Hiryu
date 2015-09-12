@@ -69,8 +69,9 @@ def get_node_on_db(label, key, value, properties = {}):
 					label=nl,
 					key_property = pr, 
 				)
-				node.properties.add(pr)
-				node.save()
+				if not pr in node.properties.all():
+					node.properties.add(pr)
+					node.save()
 				if node and properties:
 					node = set_properties_to_node(node, properties)
 	return node
