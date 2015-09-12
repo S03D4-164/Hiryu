@@ -47,7 +47,8 @@ Hiryu is less powerful than these tools, however, it can store mostly schemaless
         # Create Django database
         $ python manage.py makemigrations hiryu
         $ python manage.py migrate
-
+        $ python manage.py migrate
+        $ python manage.py loaddata hiryu/fixtures/*
 4.  Put JavaScript Library into hiryu/static
 
          $ cd hiryu/static
