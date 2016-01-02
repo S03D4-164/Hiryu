@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}
+<title>import</title>
+{% endblock %}
+
+{% block jquery %}
+<script>
+$(document).ready(
+    function(){
+        $("#import").click(function(){
+            data = $('form#import_form').serialize();
+            $.ajax({
+                type : 'post',
+                url : "/import/ioc/",
+                data: $('form#import_form').serialize(),
+                success : function() {
+                    window.location.href = "/subcluster/";
+                },
+                error : function() {
+                    alert("Import failed.")
+                }
+            });
+        });
+    }
+);
+</script>
+{% endblock%}
+
+{% block container %}
+
+<div class="col-md-4" id="form" >
+
+<div class="panel panel-primary">
+
+<div class="panel-heading">Import</div>
+<div class="panel-body">
+<h4>Are you sure?</h4>
+<form id="import_form" method=post >{% csrf_token %}
+<input type="hidden" name="subcluster" value="{{subcluster}}">
+<input id="return" class="btn btn-primary btn-md" type="submit" name="return" value="Return">
+<button id="import" type="button" class="btn" name="import" value="Import">import</button>
+</form>
+
+</div><!--/.panel-body-->
+
+</div><!--/.panel-->
+
+
+{% if cluster %}
+<div class="panel panel-primary">
+<div class="panel-heading">Cluster</div>
+<div class="panel-body">
+<table class="table">
+<tbody>
+<tr><th class="col-md-3">Name</th><td>{{cluster.name}}</td></tr>
+<tr><th>ID</th><td>{{cluster.id}}</td></tr>
+</tbody>
+</table>
+</div><!--/.panel-body-->
+</div><!--/.panel-->
+{% endif %}
+
+{% if subcluster %}
+<div class="panel panel-primary">
+<div class="panel-heading">SubCluster</div>
+<div class="panel-body">
+<table class="table">
+<tbody>
+<tr><th class="col-md-3">Name</th><td>{{subcluster.name}}</td></tr>
+<tr><th>ID</th><td>{{subcluster.id}}</td></tr>
+<tr><th>Description</th><td>{{subcluster.description}}</td></tr>
+<tr><th>Firstseen</th><td>{{subcluster.firstseen}}</td></tr>
+<tr><th>Tag</th>
+<td>
+{% for k,v in subcluster.tag.items %}
+{{k}}: {{v}}<br>
+{% endfor %}
+</td></tr>
+</tbody>
+</table>
+</div><!--/.panel-body-->
+</div><!--/.panel-->
+{% endif %}
+
+
+</div><!--/#form-->
+
+<div id="list" class="col-md-8">
+
+<div class="panel panel-primary">
+
+<div class="panel-heading">node</div>
+<div class="panel-body">
+
+{% if node %}
+<div class="tab-pane in active" id="node" >
+<table id="node_table" class="table table-condensed table-hover table-striped">
+<thead><tr >
+<th>IOCTerm</th>
+<th>Content</th>
+<th>Index</th>
+<th>Import</th>
+</tr></thead>
+<tbody>
+{% for n in node %}
+<tr>
+<td>{{n.search}}</td>
+<td>{{n.content}}</td>
+<td>
+{% if n.index %}
+{{n.index.label}} {{n.index.key}}
+{% endif  %}
+</td>
+<td>{{n.import}}</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</div><!--/#node-->
+{% endif %}
+
+
+</div><!--/.panel-body-->
+
+</div><!--/.panel-->
+
+</div><!--/#list-->
+
+{% endblock %}

@@ -1,46 +1,52 @@
-{% extends "visualize_base.html" %}
+{% extends "base.html" %}
 
-{% block options %}
-var options ={
-	"configure": {
-		"enabled": false,
-		"filter": 'nodes,edges',
-		"showButton": true
-  	},
-	"autoResize": true,
-	"nodes": {
-		"borderWidth": 0.1,
-		"scaling":{
-			"label": {
-				"enabled": true,
-			},
-		},
-		//"shadow": true,
-	},
-	"edges":{
-		"arrows": 'to',
-		"scaling":{
-			"label": {
-				"enabled": true,
-			},
-		},
-		//"shadow": true,
-		"smooth": {
-			"roundness": 0.1
-		},
-	},
-	"interaction":{
-		"hideEdgesOnDrag": false,
-		"hover": false,
-		"keyboard": true,
-	},
-	"physics": {
-		"solver": "forceAtlas2Based",
-		//"solver": "barnesHut",
-		"minVelocity":1,
-	},
-	"manipulation": {
-		"enabled": false,
-	},
-};
+{% block container %}
+
+<div class="col-md-12">
+<div class="panel panel-primary">
+<div class="panel-heading">{{target}}</div>
+<div class="panel-body">
+
+<div style="margin: 0 auto;" id="network" ></div>
+{% if model == "subcluster" or model == "cluster" or model == "node" %}
+{% if target.id %}
+<a class="btn btn-primary" href="/{{model}}/{{target.id}}">Return</a>
+<a class="btn btn-info" href="/visualize/{{model}}/{{target.id}}">Visualize</a>
+<a class="btn btn-warning" href="/vis_anonymize/{{model}}/{{target.id}}">Visualize(mask)</a>
+{% else %}
+<a class="btn btn-primary" href="/{{model}}/">Return</a>
+<a class="btn btn-info" href="/visualize/{{model}}/}">Visualize</a>
+<a class="btn btn-warning" href="/vis_anonymize/{{model}}/">Visualize(mask)</a>
+{% endif %}
+{% else %}
+<a class="btn btn-info" href="/visualize/">Visualize</a>
+<a class="btn btn-warning" href="/vis_anonymize/">Visualize(mask)</a>
+{% endif %}
+</div>
+</div>
+</div>
+
+<script type="text/javascript">
+var nodes = [
+{% for n in nodes %}{
+	'id':'{{n.id}}',
+	'label':'{{n.label}}',
+	'group':'{{n.group}}',
+	'title': '<table>{% for t in n.title %}<tr><td>{{t|escapejs}}</td></tr>{% endfor %}</table>',
+},
+{% endfor %}];
+
+var edges = [
+{% for e in edges %}{
+	'from':'{{e.from}}',
+	'to':'{{e.to}}',
+	'label':'{{e.label}}',
+	'title': '<table>{% for t in e.title %}<tr><td>{{t|escapejs}}</td></tr>{% endfor %}</table>',
+},
+{% endfor %}];
+
+var network = visNetwork(nodes, edges);
+</script>
+
+</div>
 {% endblock%}

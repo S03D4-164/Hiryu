@@ -18,10 +18,36 @@ $(document).ready(
        				$(".subcluster_form").toggle();
 	       		};
 	       	});
-		$('#node_table').DataTable({"order":[0, 'desc']});
-		$('#relation_table').DataTable({"order":[0, 'desc']});
-		$('#subcluster_table').DataTable({"order":[0, 'desc']});
-		$('#cluster_table').DataTable({"order":[0, 'desc']});
+                $('a[data-toggle="tab"]').on( 'shown.bs.tab', function (e) {
+                    $.fn.dataTable.tables( {visible: true, api: true} ).columns.adjust();
+                } );
+                $('#node_table').dataTable({
+                    "processing":true,
+                    "serverSide":true,
+                    "ajax": {
+                        "url": "/node/data",
+                        "data": {'subcluster':{{cluster.id}}},
+                    },
+                    "order":[0, 'desc'],
+                });
+                $('#relation_table').dataTable({
+                    "processing":true,
+                    "serverSide":true,
+                    "ajax": {
+                        "url": "/relation/data",
+                        "data": {'subcluster':{{cluster.id}}},
+                    },
+                    "order":[0, 'desc'],
+                });
+                $('#cluster_table').dataTable({
+                    "processing":true,
+                    "serverSide":true,
+                    "ajax": {
+                        "url": "/cluster/data",
+                        "data": {'subcluster':{{cluster.id}}},
+                    },
+                    "order":[0, 'desc'],
+                });
                 //$('#id_firstseen').datetimepicker({
                 //        format:'Y-m-d H:i'
                 //});
@@ -45,7 +71,6 @@ $(document).ready(
                 $('tbody').on('click', '.btn', function (e) {
                         table_btn($(this));
                 });
-
 	}
 );
 </script>
@@ -53,7 +78,7 @@ $(document).ready(
 
 {% block container %}
 
-<div class="col-md-5" id="form" >
+<div class="col-md-4" id="form" >
 
 <div class="panel panel-primary">
 
@@ -61,13 +86,9 @@ $(document).ready(
 <div class="panel-body">
 
 <table class="table table-condensed">
-<tr><th class="col-sm-1"></th><td class="col-sm-3"></td></tr>
-<tr><th >ID</th><td><a href="/{{model}}/{{cluster.id}}">{{cluster.id}}</a></td></tr>
+<tr><th class="col-md-3">ID</th><td><a class="btn btn-primary btn-sm" href="/{{model}}/{{cluster.id}}">{{cluster.id}}</a></td></tr>
 <tr><th>Name</th><td>{{cluster.name}}</td></tr>
-<tr><th>Description</th><td><pre>{{cluster.description}}</pre></td></tr>
-<tr><th>Firstseen</th><td>{{cluster.firstseen}}</td></tr>
 </table>
-
 <button class="btn btn-default btn-sm btn-block btn-toggle" value="cluster_form">Edit {{modes|capfirst}}</button>
 <div class="cluster_form">
 <form method=post>{% csrf_token %}
@@ -131,9 +152,52 @@ $(document).ready(
 
 </div><!--/.panel-->
 
-</div><!--/col-md-5-->
+</div><!--/.col-->
 
-<div id="list" class="col-md-7">
+<div id="list" class="col-md-8">
+
+<div id="vis">
+<div style="margin: 0 auto;" id="network" ></div>
+<script type="text/javascript">
+var nodes = [
+{% for n in dataset.nodes %}{
+        'id':'{{n.id}}',
+        'label':'{{n.label}}',
+        'group':'{{n.group}}',
+        'title': '<table>{% for t in n.title %}<tr><td>{{t|escapejs}}</td></tr>{% endfor %}</table>',
+},
+{% endfor %}];
+
+var edges = [
+{% for e in dataset.edges %}{
+        'from':'{{e.from}}',
+        'to':'{{e.to}}',
+        'label':'{{e.label}}',
+        'title': '<table>{% for t in e.title %}<tr><td>{{t|escapejs}}</td></tr>{% endfor %}</table>',
+},
+{% endfor %}];
+
+var container = document.getElementById('network');
+var data = {
+        nodes: nodes,
+        edges: edges
+};
+var options = {
+    "layout":{"randomSeed":1},
+    "physics": {
+        barnesHut: {
+            springLength: 150,
+            avoidOverlap: 0.1,
+        },
+        "minVelocity":1,
+    },
+};
+options = visOption();
+options.layout = {"randomSeed":1};
+var network = new vis.Network(container, data, options);
+</script>
+</div><!--vis-->
+<hr>
 
 <ul class="nav nav-pills">
   <li class="active" ><a data-toggle="tab" href="#node">Node({{nodes|length}})</a></li>
@@ -144,51 +208,16 @@ $(document).ready(
 <div class="tab-content">
 
 <div class="tab-pane active" id="node" >
-<table id="node_table" class="table table-condensed table-stripe table-hover">
+<table id="node_table" class="table table-condensed table-stripe table-hover display" width="100%">
 
 <thead><tr>
-<th class="col-sm-1">ID/Ref</th>
-<!--
+<th class="col-sm-1">ID</th>
+<th class="col-sm-1">Ref</th>
 <th class="col-sm-1">Label</th>
-<th>Properties</th>
--->
-<th >Node</th>
-<th>SubCluster/Cluster</th>
+<th class="col-sm-1">Key</th>
+<th class="col-sm-2">Value</th>
+<th class="col-sm-4">SubCluster/Cluster</th>
 </tr></thead>
-
-<tbody>
-
-{% for n in nodes %}
-<tr>
-<td>
-<a class="btn btn-info btn-sm" href="/node/{{n.id}}">{{n.id}}</a>
-<a class="btn btn-default btn-sm">{{n.ref}}</a>
-<!--
-<br><br>
-<button class="btn btn-default btn-xs node_id to_e" value="{{n.id}}">E</button>
-<button class="btn btn-default btn-xs node_id to_s" value="{{n.key_property.value}}">S</button>
-<button class="btn btn-default btn-xs node_id to_d" value="{{n.key_property.value}}">D</button>
--->
-</td>
-<td><table class="table table-condensed table-striped">
-<tr><th>{{n.label}} {{n.key_property.key.name}}</th></tr>
-<tr><td>{{n.key_property.value}}</td></tr>
-</table></td>
-<td><table >
-{% for s in n.subcluster.all %}
-<tr><td><a href="/subcluster/{{s.id}}">{{s.name}}</a></td>
-<td><table>
-{% for c in s.cluster.all %}
-<tr><td><a href="/cluster/{{c.id}}">{{c.name}}</a></td></tr>
-{% endfor %}
-</table></td>
-</tr>
-{% endfor %}
-</table></td>
-</tr>
-{% endfor %}
-</tbody>
-
 </table>
 
 
@@ -196,73 +225,28 @@ $(document).ready(
 
 <div class="tab-pane" id="relation" >
 
-<table id="relation_table" class="table table-condensed table-stripe table-hover">
+<table id="relation_table" class="table table-condensed table-stripe table-hover display" width="100%">
 <thead>
-<th >ID/Ref</th>
-<!--
-<th class="col-sm-1">Src Node</th>
-<th class="col-sm-1">Dst Node</th>
--->
-<th class="col-sm-3">Relation</th>
-<th class="col-sm-3">SubCluster/Cluster</th>
+<th class="col-sm-1">ID</th>
+<th class="col-sm-1">Ref</th>
+<th class="col-sm-2">Src Node</th>
+<th class="col-sm-1">Relation</th>
+<th class="col-sm-2">Dst node</th>
+<th class="col-sm-5">Subcluster/Cluster</th>
 </thead>
-<tbody>
-{% for r in relations %}
-<tr>
-<td>
-<a class="btn btn-info btn-sm" href="/relation/{{r.id}}">{{r.id}}</a>
-<a class="btn btn-default btn-sm" >{{r.ref}}</a>
-<!--
-<br><br>
-<button class="btn btn-default btn-sm rel_id" value="{{r.id}}">E</button>
--->
-</td>
-<td><table class="table table-condensed table-striped">
-<tr><th>{{r.src.key_property.key.name}}</th><td><a href="/node/{{r.src.id}}">{{r.src.key_property.value}}</a></td></tr>
-<tr><td>{{r.type.name}}</td></tr>
-<tr><th>{{r.dst.key_property.key.name}}</th><td><a href="/node/{{r.dst.id}}">{{r.dst.key_property.value}}</a></td></tr>
-</table></td>
-<!--
-<td><table>
-{% for p in r.properties.all %}
-<tr><td><{{p.key.name}}</td><td>{{p.value}}</td></tr>
-{% endfor %}
-</table></td>
--->
-<td><table class="table">
-{% for s in r.subcluster.all %}
-<tr><td><a href="/subcluster/{{s.id}}">{{s.name}}</a></td>
-<td><table class="table">
-{% for c in s.cluster.all %}
-<tr><td><a href="/cluster/{{c.id}}">{{c.name}}</a></td></tr>
-{% endfor %}</table></td>
-{% endfor %}</table></td>
-</tr>
-{% endfor %}
-<tbody>
 </table>
 
 </div><!--/#relation-->
 
 <div class="tab-pane" id="cluster" >
 
-<table id="cluster_table" class="table table-condensed table-stripe table-hover">
+<table id="cluster_table" class="table table-condensed table-stripe table-hover display" width="100%">
 <thead>
 <th class="col-md-1">ID</th>
 <th class="col-md-2">Name</th>
 <th class="col-md-4">Description</th>
 <th class="col-md-1">Firstseen</th>
 </thead>
-<tbody>
-{% for c in cluster.cluster.all %}
-<tr>
-<td><a class="btn btn-info btn-sm" href="/cluster/{{c.id}}">{{c.id}}</td>
-<td>{{c.name}}</td>
-<td><pre>{{c.description}}</pre></td>
-<td>{{c.firstseen|date:"Y-m-d H:i"}}</td>
-</tr>
-{% endfor %}
-</tbody>
 </table>
 
 </div><!--/#cluster-->

@@ -7,12 +7,14 @@
 {% block jquery %}
 <script>
 $(document).ready(
-	function(){
-                $('#subcluster_table').DataTable({"order":[0, 'desc']});
-		//$('#id_firstseen').datetimepicker({
-		//	format:'Y-m-d H:i'
-		//});
-	}
+    function(){
+        $('#subcluster_table').dataTable({
+            "processing":true,
+            "serverSide":true,
+            "ajax": "{% url 'subcluster_data' %}",
+            "order":[0, 'desc'],
+        });
+    }
 );
 </script>
 {% endblock%}
@@ -43,31 +45,14 @@ $(document).ready(
 
 <div id="list" class="col-md-8">
 
-<table id="subcluster_table" class="table table-condensed table-hover table-striped">
-
+<table id="subcluster_table" class="table table-condensed table-hover table-striped display">
 <thead><tr>
-<th class="col-sm-1">ID</th>
-<th>Name</th>
-<th >Cluster</th>
-<th class="col-sm-3">Description</th>
-<th class="col-sm-1">Firstseen</th>
+<th class="col-md-1">ID</th>
+<th class="col-md-3">Name</th>
+<th class="col-md-2">Cluster</th>
+<th class="col-md-4">Description</th>
+<th class="col-md-2">Firstseen</th>
 </tr></thead>
-
-<tbody>
-{% for s in subcluster %}
-<tr>
-<td><a class="btn btn-info btn-sm" href="/subcluster/{{s.id}}">{{s.id}}</a></td>
-<td>{{s.name}}</td>
-<td><table>
-{% for c in s.cluster.all %}
-<tr><td><a href="/cluster/{{c.id}}">{{c.name}}</a></td></tr>
-{% endfor%}
-</table></td>
-<td><pre>{{s.description|truncatechars:100}}</pre></td>
-<td>{{s.firstseen|date:"Y-m-d H:i"}}</td>
-</tr>
-{% endfor %}
-</tbody>
 
 </table>
 

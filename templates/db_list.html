@@ -8,9 +8,21 @@
 <script>
 $(document).ready(
         function(){
-                $('#node_table').DataTable({"order":[0, 'desc']});
-                $('#relation_table').DataTable({"order":[0, 'desc']});
-                $('#index_table').DataTable({"order":[0, 'desc']});
+                $('a[data-toggle="tab"]').on( 'shown.bs.tab', function (e) {
+                    $.fn.dataTable.tables( {visible: true, api: true} ).columns.adjust();
+                } );
+                $('#node_table').dataTable({
+                    "processing":true,
+                    "serverSide":true,
+                    "ajax": "{% url 'node_data' %}",
+                    "order":[0, 'desc'],
+                });
+                $('#relation_table').dataTable({
+                    "processing":true,
+                    "serverSide":true,
+                    "ajax": "{% url 'relation_data' %}",
+                    "order":[0, 'desc'],
+                });
                 $(".entity_buttons").toggle();
                 $('.btn-toggle').click(function(e){
 			e.preventDefault();
@@ -44,7 +56,7 @@ $(document).ready(
 <div class="panel-heading">Create Node/Relation on Local DB</div>
 <div class="panel-body">
 <form method=post>{% csrf_token %}
-<table >
+<table class="table table-condensed">
 {{form.as_table}}
 </table>
 <input class="btn btn-primary btn-md" type="submit" name="create" value="Create">
@@ -111,47 +123,16 @@ $(document).ready(
 
 {% if nodes %}
 <div class="tab-pane active" id="nodes">
-
-<table id="node_table" class="table table-condensed table-hover table-striped">
-
+<table id="node_table" class="table table-condensed table-hover table-striped ">
 <thead><tr>
-<th class="col-md-2">ID/Ref</th>
-<th>Node</th>
-<th>SubCluster/Cluster</th>
+<th class="col-sm-1">ID</th>
+<th class="col-sm-1">Ref</th>
+<th class="col-sm-1">Label</th>
+<th class="col-sm-1">Key</th>
+<th class="col-sm-2">Value</th>
+<th class="col-sm-4">SubCluster/Cluster</th>
 </tr></thead>
-
-<tbody>
-
-{% for n in nodes %}
-<tr>
-<td>
-<a class="btn btn-default btn-xs node_id" value="{{n.id}}"><span class="glyphicon glyphicon-chevron-left"></span></a>
-<a class="btn btn-info btn-sm" href="/node/{{n.id}}">{{n.id}}</a>
-<a class="btn btn-default btn-sm">{{n.ref}}</a>
-</td>
-<td><table class="table table-condensed table-striped">
-<tr><th>{{n.label}} {{n.key_property.key.name}}</th></tr>
-<tr><td >{{n.key_property.value}}</td></tr>
-</table></td>
-<td><table class="table table-condensed">
-{% for s in n.subcluster.all %}
-<tr><td><a href="/subcluster/{{s.id}}">{{s.name}}</a></td>
-
-<td><table class="table table-condensed">
-{% for c in s.cluster.all %}
-<tr><td><a href="/cluster/{{c.id}}">{{c.name}}</a></td></tr>
-{% endfor %}
-</table></td>
-
-</tr>
-{% endfor %}
-</table></td>
-</tr>
-{% endfor %}
-</tbody>
-
 </table>
-
 </div><!--/nodes-->
 {% endif %}
 
@@ -163,46 +144,18 @@ $(document).ready(
 <div class="tab-pane" id="relations" >
 {% endif %}
 
-<table id="relation_table" class="table table-condensed table-hover table-striped">
+<table id="relation_table" class="table table-condensed table-hover table-striped display" width="100%">
 
 <thead>
 <tr>
-<th class="col-md-2">ID/Ref</th>
-<th class="col-md-3">Relation</th>
-<th class="col-md-3">SubCluster/Cluster</th>
+<th class="col-md-1">ID</th>
+<th class="col-md-1">Ref</th>
+<th class="col-md-2">Src</th>
+<th class="col-md-1">Rel</th>
+<th class="col-md-2">Dst</th>
+<th class="col-md-5">SubCluster/Cluster</th>
 </tr>
 </thead>
-
-<tbody>
-
-{% for r in relations %}
-
-<tr>
-
-<td>
-<a class="btn btn-default btn-sm rel_id" value="{{r.id}}"><span class="glyphicon glyphicon-chevron-left"></span></a>
-<a class="btn btn-info btn-sm" href="/relation/{{r.id}}">{{r.id}}</a>
-<a class="btn btn-default btn-sm">{{r.ref}}</a><br><br>
-</td>
-<td><table class="table table-condensed table-striped">
-<tr><th>{{r.src.label.name}} {{r.src.key_property.key.name}}</th><td><a href="/node/{{r.src.id}}">{{r.src.key_property.value}}</a></td></tr>
-<tr><td>{{r.type.name}}</td></tr>
-<tr><th>{{r.dst.label.name}} {{r.dst.key_property.key.name}}</th><td><a href="/node/{{r.dst.id}}">{{r.dst.key_property.value}}</a></td></tr>
-</table></td>
-<td class="subcluster"><table class="table table-condensed">
-{% for s in r.subcluster.all %}
-<tr><td><a href="/subcluster/{{s.id}}">{{s}}</a></td>
-<td><table class="table table-condensed">{% for c in s.cluster.all %}
-<tr><td><a href="/cluster/{{c.id}}">{{c}}</a></td></tr>
-{% endfor %}</table></td>
-{% endfor %}</table></td>
-
-</tr>
-
-{% endfor %}
-
-</tbody>
-
 </table>
 
 </div><!--/relations-->

@@ -1,20 +1,7 @@
 {% extends "base.html" %}
 
-{% block defaultlib %}
-<script src="/static/js/jquery.js"></script>
-<link rel="stylesheet" href="/static/css/bootstrap.min.css">
-<script src="/static/js/bootstrap.min.js"></script>
-<link href="/static/css/vis.min.css" type="text/css" rel="stylesheet"></link>
-<script type="text/javascript" src="/static/js/vis.min.js"></script>
-<style type="text/css">
-div#network {
-	height: 800px;
-	border: 1px solid lightgray;
-}
-</style>
-{% endblock %}
-
 {% block container %}
+
 <div class="col-md-12">
 <div class="panel panel-primary">
 <div class="panel-heading">{{target}}</div>
@@ -35,6 +22,7 @@ div#network {
 <a class="btn btn-info" href="/visualize/">Visualize</a>
 <a class="btn btn-warning" href="/vis_anonymize/">Visualize(mask)</a>
 {% endif %}
+</div>
 </div>
 </div>
 

@@ -1,4 +1,4 @@
-from django.shortcuts import render_to_response, redirect
+from django.shortcuts import render_to_response, redirect, render
 from django.template import RequestContext
 from django.db.models import Q
 
@@ -9,8 +9,9 @@ from db import add_property_to_entity, remove_property_from_entity, \
 from graph import graph_init
 
 def node_list(request):
-	rc = db_view(request, "node")
-        return render_to_response("db_list.html", rc)
+	c = db_view(request, "node")
+        #return render_to_response("db_list.html", rc)
+        return render(request, "db_list.html", c)
 
 def node_view(request, id):
 	graph = graph_init()

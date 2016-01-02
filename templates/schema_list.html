@@ -23,9 +23,9 @@ $(document).ready(
 
 <div class="col-md-4" id="form" >
 
+{% if iform %}
 <div class="panel panel-primary">
-
-<div class="panel-heading">Create Label-Key Pair for Node</div>
+<div class="panel-heading">Create Node Index (Label-Key Pair)</div>
 <div class="panel-body">
 <form method=post>{% csrf_token %}
 <table class="table table-condensed">
@@ -33,19 +33,20 @@ $(document).ready(
 {{iform.as_table}}
 </table>
 <input class="btn btn-primary btn-md" type="submit" name="create_index" value="Create">
+<!--
 <input class="btn btn-warning btn-md" type="submit" name="rename_label" value="Rename Label">
 <input class="btn btn-warning btn-md" type="submit" name="rename_key" value="Rename Key">
+-->
 <br><br>
 <input class="btn btn-danger btn-md" type="submit" name="delete_label" value="Delete Label">
 <input class="btn btn-danger btn-md" type="submit" name="delete_key" value="Delete Key">
 </form>
-
 </div><!--/.panel-body-->
-
 </div><!--/.panel-->
+{% endif %}
 
+{% if tform %}
 <div class="panel panel-primary">
-
 <div class="panel-heading">IOC Term</div>
 <div class="panel-body">
 <form method=post>{% csrf_token %}
@@ -56,13 +57,12 @@ $(document).ready(
 <input class="btn btn-primary btn-md" type="submit" name="create_ioc" value="Create">
 <input class="btn btn-danger btn-md" type="submit" name="delete_ioc" value="Delete">
 </form>
-
 </div><!--/.panel-body-->
-
 </div><!--/.panel-->
+{% endif %}
 
+{% if rtform %}
 <div class="panel panel-primary">
-
 <div class="panel-heading">Create Relation Template</div>
 <div class="panel-body">
 <form method=post>{% csrf_token %}
@@ -70,26 +70,25 @@ $(document).ready(
 <tr><th class="col-sm-1"></th><td class="col-sm-3"></td></tr>
 {{rtform.as_table}}
 </table>
-<input class="btn btn-primary btn-md" type="submit" name="create_template" value="Create">
+<input class="btn btn-primary btn-md" type="submit" name="create_template" value="Create Relation">
 <input class="btn btn-warning btn-md" type="submit" name="rename_reltype" value="Rename Type">
+<input class="btn btn-warning btn-md" type="submit" name="replace_index" value="Replace Index">
 <br><br>
 <input class="btn btn-danger btn-md" type="submit" name="delete_reltype" value="Delete Type">
 <input class="btn btn-danger btn-md" type="submit" name="delete_index" value="Delete Index(Source)">
 </form>
-
 </div><!--/.panel-body-->
-
 </div><!--/.panel-->
-
+{% endif %}
 
 </div><!--/#form-->
 
 <div id="list" class="col-md-8">
 
 <ul class="nav nav-pills">
-  <li class="active" ><a data-toggle="tab" href="#index">Index({{index|length}})</a></li>
-  <li ><a data-toggle="tab" href="#reltemplate">Relation Template({{reltemplate|length}})</a></li>
-  <li ><a data-toggle="tab" href="#iocterm">IOC Terms({{iocterm|length}})</a></li>
+{% if index %}<li class="active" ><a data-toggle="tab" href="#index">Index({{index|length}})</a></li>{% endif %}
+{% if reltemplate %}<li ><a data-toggle="tab" href="#reltemplate">Relation Template({{reltemplate|length}})</a></li>{% endif %}
+{% if iocterm %}<li ><a data-toggle="tab" href="#iocterm">IOC Terms({{iocterm|length}})</a></li>{% endif %}
 </ul>
 
 <div class="tab-content">
