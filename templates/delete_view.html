@@ -44,8 +44,7 @@ $(document).ready(
 <div class="panel-body">
 <table class="table">
 <tbody>
-<tr><th class="col-md-1"></th><td class="col-md-3"></td></tr>
-<tr><th>Model</th><td>{{model|capfirst}}</td></tr>
+<tr><th class="col-md-3">Model</th><td>{{model|capfirst}}</td></tr>
 <tr><th>ID</th><td>{{target.id}}</td></tr>
 {% if target.name %}
 <tr><th>Name</th><td>{{target.name}}</td></tr>
@@ -71,8 +70,8 @@ $(document).ready(
 <div class="panel-body">
 
 <ul class="nav nav-pills">
-{% if sc %}<li ><a data-toggle="tab" href="#subcluster">SubCluster</a></li>{% endif %}
-{% if node %}<li ><a data-toggle="tab" href="#node">Node</a></li>{% endif %}
+{% if sc %}<li ><a data-toggle="tab" href="#subcluster">SubCluster({{sc|length}})</a></li>{% endif %}
+{% if node %}<li ><a data-toggle="tab" href="#node">Node({{node|length}})</a></li>{% endif %}
 {% if relation %}<li ><a data-toggle="tab" href="#relation">Relation({{relation|length}})</a></li>{% endif %}
 </ul>
 

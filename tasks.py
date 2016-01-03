@@ -1,9 +1,9 @@
 from __future__ import absolute_import
 
 import os, re
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'myproject.settings')
+#os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'myproject.settings')
+#from django.conf import settings
 
-from django.conf import settings
 from .celery import app
 
 from .models import *
@@ -129,5 +129,5 @@ def push_db_to_graph(entity):
     for relation in relations:
        get_relation_on_graph(relation, graph)
 
-if __name__ == '__main__': 
-    app.start()   
+#if __name__ == '__main__': 
+#    app.start()   

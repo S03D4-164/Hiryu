@@ -1,6 +1,6 @@
 from django import forms
 from django.utils.translation import ugettext_lazy as _
-from django.forms.widgets import RadioSelect, Select
+from django.forms.widgets import Select
 from .models import *
 
 input_formats = [

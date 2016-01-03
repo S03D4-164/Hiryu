@@ -63,14 +63,12 @@ $(document).ready(
                 $('tbody').on('click', '.btn', function (e) {
                         table_btn($(this));
                 });
-
 	}
 );
 </script>
 {% endblock%}
 
 {% block container %}
-
 
 <div class="col-md-4 panel-group" id="accordion">
 
@@ -109,10 +107,10 @@ $(document).ready(
 </div>
 </div><!--/.panel-->
 
-<div class="panel panel-primary">
+<div class="panel panel-info">
 
 <div class="panel-heading">
-<a data-toggle="collapse" data-parent="#accordion" href="#collapse2" style="color:white">
+<a data-toggle="collapse" data-parent="#accordion" href="#collapse2" >
 Create SubCluster
 </a>
 </div>
@@ -123,13 +121,13 @@ Create SubCluster
 <tr><th class="col-md-1"></th><td class="col-md-3"></td></tr>
 {{scform.as_table}}
 </table>
-<input class="btn btn-info btn-sm" type="submit" name="create_subcluster" value="Create">
+<input class="btn btn-info" type="submit" name="create_subcluster" value="Create">
 </form>
 </div><!--/.panel-body-->
 </div>
 </div><!--/.panel-->
 
-<div class="panel panel-primary">
+<div class="panel panel-default">
 
 <div class="panel-heading">Import/Export {{model|capfirst}} </div>
 <div class="panel-body">
@@ -149,7 +147,6 @@ Create SubCluster
 
 </div><!--/.panel-->
 
-
 </div><!--/.col-md-4-->
 
 <div id="list" class="col-md-8">
@@ -163,7 +160,7 @@ Create SubCluster
 <div class="tab-content">
 
 <div class="tab-pane active" id="subcluster" >
-<table id="subcluster_table" class="table table-condensed table-stripe table-hover">
+<table id="subcluster_table" class="table table-condensed table-stripe table-hover display" width="100%">
 
 <thead><tr>
 <th class="col-md-1">ID</th>
@@ -172,22 +169,6 @@ Create SubCluster
 <th class="col-md-4">Description</th>
 <th class="col-md-2">Firstseen</th>
 </tr></thead>
-
-<tbody>
-{% for s in subcluster %}
-<tr>
-<td><a class="btn btn-info btn-sm"href="/subcluster/{{s.id}}">{{s.id}}</a></td>
-<td>{{s.name}}</td>
-<td><pre>{{s.description|truncatechars:100}}</pre></td>
-<td><table>
-{% for c in s.cluster.all %}
-<tr><td><a href="/cluster/{{c.id}}">{{c.name}}</a></td></tr>
-{% endfor %}
-</table></td>
-<td>{{s.firstseen|date:"Y/m/d H:i"}}</td>
-</tr>
-{% endfor %}
-</tbody>
 </table>
 </div><!--/#subcluster-->
 
@@ -203,7 +184,6 @@ Create SubCluster
 <th class="col-sm-4">SubCluster/Cluster</th>
 </tr></thead>
 </table>
-
 
 </div><!--/#node-->
 

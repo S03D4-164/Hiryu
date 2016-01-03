@@ -8,24 +8,26 @@ from .db import push_all_to_graph, get_node_on_db, relform_to_localdb
 from .graph import graph_init
 from .visualize import create_dataset
 
+
 def create_subcluster(form):
     name = form.cleaned_data["name"].strip()
     description = form.cleaned_data["description"]
     firstseen = form.cleaned_data["firstseen"]
     cluster = form.cleaned_data["cluster"]
+    tag = form.cleaned_data["tag"]
     s, created = SubCluster.objects.get_or_create(
         name = name
     )
-    if s:
+    if s and created:
         if description:
             s.description = description
         if firstseen:
             s.firstseen = firstseen
-        s.cluster.clear()
-        for c in cluster:
-            s.cluster.add(c)
+        if cluster:
+            s.cluster = cluster
         s.save()
     return s
+
 
 def subcluster_list(request):
     form = SubClusterForm()
@@ -35,11 +37,14 @@ def subcluster_list(request):
             if form.is_valid():
                 s = create_subcluster(form)
     subcluster = SubCluster.objects.all().order_by("-id")
-    rc = RequestContext(request, {
+    #rc = RequestContext(request, {
+    c = {
         "form":form,
         "subcluster":subcluster,
-    })
-    return render_to_response("subcluster_list.html", rc)
+    }
+    #return render_to_response("subcluster_list.html", rc)
+    return render(request, "subcluster_list.html", c)
+
 
 def subcluster_view(request, id):
     subcluster = SubCluster.objects.get(id=id)
@@ -57,6 +62,7 @@ def subcluster_view(request, id):
                 description = form.cleaned_data["description"]
                 firstseen = form.cleaned_data["firstseen"]
                 cluster = form.cleaned_data["cluster"]
+                tag = form.cleaned_data["tag"]
                 if name and not name == subcluster.name:
                     subcluster.name = name
                 if description:
@@ -64,8 +70,9 @@ def subcluster_view(request, id):
                 if firstseen:
                     subcluster.firstseen = firstseen
                 subcluster.cluster.clear()
-                for c in cluster:
-                    subcluster.cluster.add(c)
+                subcluster.cluster = cluster
+                subcluster.tag.clear()
+                subcluster.tag = tag
                 subcluster.save()
         elif "delete" in request.POST:
             return redirect("/delete/subcluster/" + id)

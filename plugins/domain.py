@@ -34,7 +34,7 @@ def whois_domain(domain, subcluster = None):
                             value = v,
                         )
                         rel.properties.add(p)
-
+                    rel.save()
                 if rel and subcluster:
                     rel.subcluster.add(subcluster)
                     rel.save()

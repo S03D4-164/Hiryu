@@ -1,4 +1,4 @@
-from django.shortcuts import render_to_response, redirect
+from django.shortcuts import render_to_response, redirect, render
 from django.template import RequestContext
 from django.db.models import Q
 
@@ -53,6 +53,8 @@ def delete_view(request, model, id=None):
             "id":"-",
             "name":"Graph DB",
         }
+    elif model == "ioc":
+        target = OpenIOC.objects.get(pk=id)
 
     if request.method == "POST":
         if "return" in request.POST:
@@ -96,7 +98,8 @@ def delete_view(request, model, id=None):
                 return redirect("/" + model)
             else:
                 return redirect("/schema/graphdb/")
-    rc = RequestContext(request, {
+    #rc = RequestContext(request, {
+    c = {
         "model":model,
         "target":target,
         "sc":sc,
@@ -104,6 +107,7 @@ def delete_view(request, model, id=None):
         "relation":relation,
         "index":index,
         "property":property,
-    })
-    return render_to_response("delete_view.html", rc)
+    }
+    #return render_to_response("delete_view.html", rc)
+    return render(request, "delete_view.html", c)
 

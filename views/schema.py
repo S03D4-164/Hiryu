@@ -1,4 +1,4 @@
-from django.shortcuts import render_to_response, redirect
+from django.shortcuts import render_to_response, redirect, render
 from django.template import RequestContext
 from django.contrib import messages
 
@@ -6,7 +6,9 @@ from ..models import *
 from ..forms import *
 from .graph import graph_init
 
+
 def process_request(request):
+    print request.POST
     if "create_index" in request.POST:
         iform = IndexForm(request.POST)
         if iform.is_valid():
@@ -34,9 +36,8 @@ def process_request(request):
                     graph.schema.create_uniqueness_constraint(ln, kn)
                 except:
                     pass
-    if "create_ioc" in request.POST:
+    elif "create_ioc" in request.POST:
         tform = IOCTermForm(request.POST)
-        print request.POST
         if tform.is_valid():
             term = tform.cleaned_data["iocterm"]
             text = tform.cleaned_data["text"]
@@ -49,13 +50,18 @@ def process_request(request):
                 ioc, created = IOCTerm.objects.get_or_create(
                     text = text
                 )
-            print allow_import
             if ioc:
                 if index:
                     ioc.index = index
                 ioc.allow_import = allow_import
                 ioc.save()
+    elif "delete_ioc" in request.POST:
+        tform = IOCTermForm(request.POST)
+        if tform.is_valid():
+            term = tform.cleaned_data["iocterm"]
+            return redirect("/delete/ioc/" + str(term.id))
     return 
+
 
 def ioc_schema_list(request):
     iform = IndexForm()
@@ -64,16 +70,15 @@ def ioc_schema_list(request):
         process_request(request)
         iform = IndexForm(request.POST)
         tform = IOCTermForm(request.POST)
-    rc = RequestContext(request, {
+    c = {
         "iform":iform,
         #"rtform":rtform,
         "tform":tform,
         "index":NodeIndex.objects.all(),
         #"reltemplate":RelationTemplate.objects.all(),
         "iocterm":IOCTerm.objects.all(),
-    })
-    return render_to_response("schema_list.html", rc)
-
+    }
+    return render(request, "schema_list.html", c)
 
 
 def schema_list(request):
@@ -120,9 +125,12 @@ def schema_list(request):
                         label.save()
         elif "delete_label" in request.POST:
             iform = IndexForm(request.POST)
-            if iform.is_valid():
-                label = iform.cleaned_data["label"]
-                return redirect("/delete/label/" + str(label.id))
+            try:
+                if iform.is_valid():
+                    label = iform.cleaned_data["label"]
+                    return redirect("/delete/label/" + str(label.id))
+            except Exception as e:
+                messages.add_message(request, messages.WARNING, "Error: " + str(e))
         elif "rename_key" in request.POST:
             iform = IndexForm(request.POST)
             if iform.is_valid():
@@ -134,14 +142,20 @@ def schema_list(request):
                         key.save()
         elif "delete_key" in request.POST:
             iform = IndexForm(request.POST)
-            if iform.is_valid():
-                key = iform.cleaned_data["property_key"]
-                return redirect("/delete/property_key/" + str(key.id))
+            try:
+                if iform.is_valid():
+                    key = iform.cleaned_data["property_key"]
+                    return redirect("/delete/property_key/" + str(key.id))
+            except Exception as e:
+                messages.add_message(request, messages.WARNING, "Error: " + str(e))
         elif "delete_index" in request.POST:
             rtform = RelTemplateForm(request.POST)
-            if rtform.is_valid():
-                index = rtform.cleaned_data["src_index"]
-                return redirect("/delete/index/" + str(index.id))
+            try:
+                if rtform.is_valid():
+                    index = rtform.cleaned_data["src_index"]
+                    return redirect("/delete/index/" + str(index.id))
+            except Exception as e:
+                messages.add_message(request, messages.WARNING, "Error: " + str(e))
         elif "rename_reltype" in request.POST:
             rtform = RelTemplateForm(request.POST)
             if rtform.is_valid():
@@ -153,31 +167,43 @@ def schema_list(request):
                         type.save()
         elif "delete_reltype" in request.POST:
             rtform = RelTemplateForm(request.POST)
-            if rtform.is_valid():
-                type = rtform.cleaned_data["type"]
-                return redirect("/delete/reltype/" + str(type.id))
+            try:
+                if rtform.is_valid():
+                    type = rtform.cleaned_data["type"]
+                    return redirect("/delete/reltype/" + str(type.id))
+            except Exception as e:
+                messages.add_message(request, messages.WARNING, "Error: " + str(e))
         elif "create_template" in request.POST:
             rtform = RelTemplateForm(request.POST)
-            if rtform.is_valid():
-                src_index = rtform.cleaned_data["src_index"]
-                type = rtform.cleaned_data["type"]
-                dst_index = rtform.cleaned_data["dst_index"]
-                rt, created = RelationTemplate.objects.get_or_create(
-                    src_index = src_index,
-                    type = type,
-                    dst_index = dst_index,
-                )
+            try:
+                if rtform.is_valid():
+                    src_index = rtform.cleaned_data["src_index"]
+                    type = rtform.cleaned_data["type"]
+                    dst_index = rtform.cleaned_data["dst_index"]
+                    rt, created = RelationTemplate.objects.get_or_create(
+                        src_index = src_index,
+                        type = type,
+                        dst_index = dst_index,
+                    )
+            except Exception as e:
+                messages.add_message(request, messages.WARNING, "Error: " + str(e))
         elif "replace_index" in request.POST:
             rtform = RelTemplateForm(request.POST)
-            if rtform.is_valid():
-                src_index = rtform.cleaned_data["src_index"]
-                nodes = Node.objects.filter(label=src_index.label, key_property__key=src_index.property_key)
-                dst_index = rtform.cleaned_data["dst_index"]
+            try:
+                if rtform.is_valid():
+                    src_index = rtform.cleaned_data["src_index"]
+                    nodes = Node.objects.filter(
+                        label=src_index.label,
+                        key_property__key=src_index.property_key
+                    )
+                    dst_index = rtform.cleaned_data["dst_index"]
                 for n in nodes:
                     n.index = dst_index
                     n.label = dst_index.label
                     n.key_property.key = dst_index.property_key
                     n.save()
+            except Exception as e:
+                messages.add_message(request, messages.WARNING, "Error: " + str(e))
 
         """
         elif "create_ioc" in request.POST:
@@ -194,13 +220,13 @@ def schema_list(request):
                     ioc.allow_import = allow_import
                     ioc.save()
         """
-    rc = RequestContext(request, {
+    c = {
         "iform":iform,
         "rtform":rtform,
         #"tform":tform,
         "index":NodeIndex.objects.all(),
         "reltemplate":RelationTemplate.objects.all(),
         #"iocterm":IOCTerm.objects.all(),
-    })
-    return render_to_response("schema_list.html", rc)
+    }
+    return render(request, "schema_list.html", c)
 

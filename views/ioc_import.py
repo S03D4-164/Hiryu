@@ -1,7 +1,7 @@
 from django.shortcuts import render_to_response, redirect
 from ..models import *
 from ..tasks import process_node
-from db import get_node_on_db
+from .db import get_node_on_db
 
 import re, tldextract, ast
 import lxml.objectify
@@ -36,6 +36,7 @@ def metadata_to_subcluster(m):
         pass
     return subcluster
 
+
 def ii_to_ni(ii):
     search = ii.Context.attrib.get("search")
     content = str(ii.Content).strip()
@@ -61,6 +62,7 @@ def ii_to_ni(ii):
 
     return node
 
+
 def indicator_to_node(i, sc):
     if hasattr(i, "IndicatorItem"):
         for ii in i.IndicatorItem:
@@ -70,6 +72,7 @@ def indicator_to_node(i, sc):
     if hasattr(i, "Indicator"):
         i = indicator_to_node(i.Indicator, sc)
     return sc
+
 
 def pre_import_ioc(file):
     ioco = lxml.objectify.parse(file)
@@ -81,7 +84,8 @@ def pre_import_ioc(file):
             sc["node"] = []
             sc = indicator_to_node(root.definition, sc)
     elif "OpenIOC" in root.tag:
-        sc = metadata_to_subcluster(root.metadata, cluster)
+        #sc = metadata_to_subcluster(root.metadata, cluster)
+        sc = metadata_to_subcluster(root.metadata)
         if sc:
             sc["node"] = []
             sc = indicator_to_node(root.criteria, sc)
@@ -116,8 +120,7 @@ def import_ioc(request):
             sc.tag.add(t)
             sc.save()
         if "node" in d:
-            nodes = d["node"]
-            for node in nodes:
+            for node in d["node"]:
                 if "import" in node:
                     if node["import"]:
                         label = None
@@ -157,7 +160,6 @@ def import_ioc(request):
                             if sc:
                                 n.subcluster.add(sc)
                                 n.save()
-                            from ..tasks import process_node
                             process_node.delay(n, sc)
         if "cluster" in d:
             cluster = d["cluster"]
