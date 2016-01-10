@@ -5,6 +5,8 @@ from ..models import *
 from ..forms import *
 from ..tasks import process_node
 from .db import push_all_to_graph, get_node_on_db, relform_to_localdb
+from .csv_import import import_subcluster
+from ioc_import import pre_import_ioc
 from .graph import graph_init
 from .visualize import create_dataset
 
@@ -31,18 +33,36 @@ def create_subcluster(form):
 
 def subcluster_list(request):
     form = SubClusterForm()
+    iform = UploadFileForm()
     if request.method == "POST":
         if "create" in request.POST:
             form = SubClusterForm(request.POST)
             if form.is_valid():
                 s = create_subcluster(form)
+        elif "import_csv" in request.POST:
+            iform = UploadFileForm(request.POST, request.FILES)
+            if iform.is_valid():
+                import_subcluster(request.FILES['file'])
+        elif "delete" in request.POST:
+            return redirect("/delete/subcluster/")
+        elif "import_ioc" in request.POST:
+            iform = UploadFileForm(request.POST, request.FILES)
+            if iform.is_valid():
+                sc = pre_import_ioc(request.FILES['file'])
+                if sc:
+                    context = {
+                        "subcluster":sc,
+                        "cluster":sc["cluster"],
+                        "node":sc["node"],
+                    }
+                    return render(request, "import_view.html", context)
+
     subcluster = SubCluster.objects.all().order_by("-id")
-    #rc = RequestContext(request, {
     c = {
         "form":form,
+        "iform":iform,
         "subcluster":subcluster,
     }
-    #return render_to_response("subcluster_list.html", rc)
     return render(request, "subcluster_list.html", c)
 
 

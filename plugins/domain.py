@@ -1,4 +1,5 @@
 from pythonwhois import get_whois
+from datetime import datetime
 
 from ..models import *
 from ..views.db import get_node_on_db
@@ -24,6 +25,12 @@ def whois_domain(domain, subcluster = None):
                     src = reg,
                     dst = domain
                 )
+                if created:
+                    rel.firstseen = datetime.now()
+                    rel.lastseen = datetime.now()
+                else:
+                    rel.lastseen = datetime.now()
+                rel.save()
                 for k,v in properties.iteritems():
                     if k and v:
                         pk, created = PropertyKey.objects.get_or_create(

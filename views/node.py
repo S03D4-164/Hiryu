@@ -4,9 +4,10 @@ from django.db.models import Q
 
 from ..models import *
 from ..forms import *
-from db import add_property_to_entity, remove_property_from_entity, \
-		get_node_on_graph, db_view
-from graph import graph_init
+from .db import add_property_to_entity, remove_property_from_entity, \
+		get_node_on_graph
+from .entity import db_view
+from .graph import graph_init
 
 def node_list(request):
 	c = db_view(request, "node")

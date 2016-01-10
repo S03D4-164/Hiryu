@@ -63,11 +63,12 @@ class IndexForm(forms.ModelForm):
     class Meta:
         model = NodeIndex
         #fields = ["node_index", "label", "new_label", "property_key", "new_key"]
-        fields = ["label", "new_label", "property_key", "new_key"]
+        fields = ["label", "new_label", "property_key", "new_key", "icon"]
     def __init__(self, *args, **kwargs):
         super(IndexForm, self).__init__(*args, **kwargs)
         self.fields["label"].required = False
         self.fields["property_key"].required = False
+        self.fields["icon"].required = False
     def clean(self):
         label = self.cleaned_data["label"]
         l = self.cleaned_data["new_label"].strip()

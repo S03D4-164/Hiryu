@@ -10,7 +10,6 @@ import json
 def vis_anonymize(request, model=None, id=None):
     c = visualize_view(request, model, id, anonymize=True)
     return render(request, 'visualize_view.html', c)
-    #return render_to_response('visualize_view.html', rc)
 
 def visualize_view(request, model=None, id=None, anonymize=False):
     rel = None
@@ -35,9 +34,7 @@ def visualize_view(request, model=None, id=None, anonymize=False):
             target = Cluster.objects.all()
             rel = Relation.objects.filter(subcluster__cluster__in=target)
             node = Node.objects.filter(subcluster__cluster__in=target)
-            target = {
-                "name":"All Cluster"
-            }
+            target = "All Cluster"
     elif model == "node":
         if id:
             target = Node.objects.get(pk=id)

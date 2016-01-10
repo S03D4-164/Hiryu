@@ -5,6 +5,100 @@ import csv, os
 
 appdir =  os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
+def export_cluster(request, id=None):
+    cluster = Cluster.objects.all()
+    fieldnames = (
+        "name",
+        "description",
+        "firstseen",
+        "tag_key",
+        "tag_value",
+    )
+    out = "/static/export/cluster_all.csv"
+    writer = csv.DictWriter(open(appdir + out, "wb"), fieldnames)
+    writer.writeheader()
+    for c in cluster:
+        dict = {
+            "name":c.name.encode("utf8"),
+            "description":None,
+            "firstseen":c.firstseen,
+            "tag_key":None,
+            "tag_value":None,
+        }
+        if c.description:
+            dict["description"] = c.description.encode("utf-8")
+        tag = c.tag.all()
+        if tag:
+            for t in tag:
+                dict["tag_key"] = t.key.name.encode("utf-8")
+                dict["tag_value"] = t.value.encode("utf-8")
+                writer.writerow(dict)
+        else:
+            writer.writerow(dict)
+    return redirect(out)
+
+    
+def export_subcluster(request, id=None):
+    subcluster = SubCluster.objects.all()
+    fieldnames = (
+        "sc_name",
+        "sc_description",
+        "sc_firstseen",
+        "sc_tag_key",
+        "sc_tag_value",
+        "c_name",
+        "c_description",
+        "c_firstseen",
+        "c_tag_key",
+        "c_tag_value",
+    )
+    out = "/static/export/subcluster_all.csv"
+    writer = csv.DictWriter(open(appdir + out, "wb"), fieldnames)
+    writer.writeheader()
+    for s in subcluster:
+        dict = {
+            "sc_name":s.name.encode("utf8"),
+            "sc_description":None,
+            "sc_firstseen":s.firstseen,
+            "sc_tag_key":None,
+            "sc_tag_value":None,
+            "c_name":None,
+            "c_description":None,
+            "c_firstseen":None,
+            "c_tag_key":None,
+            "c_tag_value":None,
+        }
+        if s.description:
+            dict["sc_description"] = s.description.encode("utf-8")
+        tag = s.tag.all()
+        if tag:
+            for t in tag:
+                dict["sc_tag_key"] = t.key.name.encode("utf-8")
+                dict["sc_tag_value"] = t.value.encode("utf-8")
+                writer.writerow(dict)
+        else:
+            writer.writerow(dict)
+        dict["sc_tag_key"] = None
+        dict["sc_tag_value"] = None
+        cluster = s.cluster.all()
+        if cluster:
+            for c in cluster:
+                dict["c_name"] = c.name.encode("utf-8")
+                dict["c_firstseen"] = c.firstseen
+                if c.description:
+                    dict["c_description"] = c.description.encode("utf-8")
+                if c.tag.all():
+                    for t in c.tag.all():
+                        dict["c_tag_key"] = t.key.name.encode("utf-8")
+                        dict["c_tag_value"] = t.value.encode("utf-8")
+                        writer.writerow(dict)
+                else:
+                    writer.writerow(dict)
+        else:
+                writer.writerow(dict)
+    return redirect(out)
+
+
 def export_node(request, model=None, id=None):
     node = None
     subcluster = None
@@ -74,7 +168,7 @@ def write_entity_to_csv(cluster, subcluster, e, dict, writer):
                         dict["subcluster"] = s.name.encode("utf8")
                         for c in s.cluster.all():
                             dict["cluster"] = c.name.encode("utf8")
-                writer.writerow(dict)
+                            writer.writerow(dict)
                 
     else:
         if subcluster:
@@ -99,7 +193,7 @@ def write_entity_to_csv(cluster, subcluster, e, dict, writer):
                     dict["subcluster"] = s.name.encode("utf8")
                     for c in s.cluster.all():
                         dict["cluster"] = c.name.encode("utf8")
-            writer.writerow(dict)
+                        writer.writerow(dict)
 
 def export_relation(request, model=None, id=None):
     node = None

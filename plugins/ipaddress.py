@@ -1,4 +1,5 @@
 from ipwhois import IPWhois
+from datetime import datetime
 
 from ..models import *
 from ..views.db import get_node_on_db
@@ -24,6 +25,11 @@ def whois_ip(ip, subcluster = None):
                     src = org,
                     dst = ip,
                 )
+                if created:
+                    rel.firstseen = datetime.now()
+                    rel.lastseen = datetime.now()
+                else:
+                    rel.lastseen = datetime.now()
             for k,v in properties.iteritems():
                 if k and v:
                     pk, created = PropertyKey.objects.get_or_create(

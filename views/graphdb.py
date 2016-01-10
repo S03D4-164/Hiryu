@@ -217,11 +217,13 @@ def graphdb_view(request):
         }
         indexes.append(index)
 
-    rc = RequestContext(request, {
+    #rc = RequestContext(request, {
+    c = {
         "form":form,
         "eform":eform,
         "relations":rlist,
         "nodes":nlist,
         "indexes":indexes,
-    })
-    return render_to_response("graphdb_list.html", rc)
+    }
+    #return render_to_response("graphdb_list.html", rc)
+    return render(request, "graphdb_list.html", c)

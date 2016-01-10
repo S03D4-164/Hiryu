@@ -14,14 +14,20 @@ def delete_view(request, model, id=None):
     index = None
     property = None
     if model == "cluster":
-        target = Cluster.objects.get(pk=id)
-        sc = SubCluster.objects.filter(cluster=id)
-        node = Node.objects.filter(subcluster=sc)
-        relation = Relation.objects.filter(subcluster=sc)
+        if id:
+            target = Cluster.objects.get(pk=id)
+            sc = SubCluster.objects.filter(cluster=id)
+            node = Node.objects.filter(subcluster=sc)
+            relation = Relation.objects.filter(subcluster=sc)
+        else:
+            target = Cluster.objects.all()
     elif model == "subcluster":
-        target = SubCluster.objects.get(pk=id)
-        node = Node.objects.filter(subcluster=target)
-        relation = Relation.objects.filter(subcluster=target)
+        if id:
+            target = SubCluster.objects.get(pk=id)
+            node = Node.objects.filter(subcluster=target)
+            relation = Relation.objects.filter(subcluster=target)
+        else:
+            target = SubCluster.objects.all()
     elif model == "property_key":
         target = PropertyKey.objects.get(pk=id)
         property = Property.objects.filter(key=target)
@@ -71,6 +77,12 @@ def delete_view(request, model, id=None):
             if id:
                 target.delete()
             else:
+                if model == "cluster" or model == "db":
+                    for c in Cluster.objects.all():
+                        c.delete()
+                if model == "subcluster" or model == "db":
+                    for s in SubCluster.objects.all():
+                        s.delete()
                 if model == "node" or model == "db":
                     for n in Node.objects.all():
                         n.delete()
@@ -98,7 +110,6 @@ def delete_view(request, model, id=None):
                 return redirect("/" + model)
             else:
                 return redirect("/schema/graphdb/")
-    #rc = RequestContext(request, {
     c = {
         "model":model,
         "target":target,
@@ -108,6 +119,5 @@ def delete_view(request, model, id=None):
         "index":index,
         "property":property,
     }
-    #return render_to_response("delete_view.html", rc)
     return render(request, "delete_view.html", c)
 

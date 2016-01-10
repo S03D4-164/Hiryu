@@ -7,7 +7,7 @@ from django.db import models
 class PropertyKey(models.Model):
     name = models.CharField(unique=True, max_length=200)
     def __unicode__(self):
-        return self.name
+        return self.name.encode("utf-8")
     class Meta:
         ordering = ["name"]
 
@@ -15,7 +15,7 @@ class Property(models.Model):
     key = models.ForeignKey(PropertyKey)
     value = models.CharField(max_length=2000)
     def __str__(self):
-        return str(self.key.name + " - " + self.value)
+        return str(self.key.name + " - " + self.value.encode("utf-8"))
     class Meta:
         unique_together = (("key", "value"),)
         ordering = ["key", "value"]
@@ -24,7 +24,7 @@ class Tag(models.Model):
     key = models.ForeignKey(PropertyKey)
     value = models.CharField(max_length=2000)
     def __str__(self):
-        return str(self.key.name + " - " + self.value)
+        return str(self.key.name + " - " + self.value.encode("utf-8"))
     class Meta:
         unique_together = (("key", "value"),)
         ordering = ["key", "value"]
@@ -39,14 +39,14 @@ class Cluster(models.Model):
     modified = models.DateTimeField(auto_now=True)
     tag = models.ManyToManyField(Tag)
     def __str__(self):
-        return self.name
+        return self.name.encode("utf-8")
     class Meta:
         ordering = ["name"]
 
 class Reference(models.Model):
     location = models.URLField(max_length=2000)
     def __str__(self):
-        return self.location
+        return self.location.encode("utf-8")
     class Meta:
         ordering = ["location"]
 
@@ -61,20 +61,21 @@ class SubCluster(models.Model):
     reference = models.ManyToManyField(Reference)
     tag = models.ManyToManyField(Tag)
     def __str__(self):
-        return self.name
+        return self.name.encode("utf-8")
     class Meta:
         ordering = ["name"]
 
 class NodeLabel(models.Model):
     name = models.CharField(unique=True, max_length=200)
     def __str__(self):
-        return self.name
+        return self.name.encode("utf-8")
     class Meta:
         ordering = ["name"]
 
 class NodeIndex(models.Model):
     label = models.OneToOneField(NodeLabel)
     property_key = models.ForeignKey(PropertyKey)
+    icon = models.CharField(max_length=200, blank=True, null=True)
     def __str__(self):
         return str(self.label.name + " " + self.property_key.name)
     class Meta:
@@ -85,8 +86,9 @@ class IOCTerm(models.Model):
     text = models.CharField(max_length=200)
     index = models.ForeignKey(NodeIndex, blank=True, null=True)
     allow_import = models.BooleanField(default=False)
+    allow_export = models.BooleanField(default=False)
     def __str__(self):
-        return self.text
+        return self.text.encode("utf-8")
 
 class Node(models.Model):
     index = models.ForeignKey(NodeIndex, related_name="node_index")
@@ -96,14 +98,14 @@ class Node(models.Model):
     ref = models.PositiveIntegerField(unique=True, blank=True, null=True)
     subcluster = models.ManyToManyField(SubCluster)
     def __str__(self):
-        return str(self.label.name + " - " + self.key_property.key.name + " - " + self.key_property.value)
+        return str(self.label.name + " - " + self.key_property.key.name + " - " + self.key_property.value.encode("utf-8"))
     class Meta:
         unique_together = (("label", "key_property"),)
 
 class RelType(models.Model):
     name = models.CharField(unique=True, max_length=200)
     def __str__(self):
-        return self.name
+        return self.name.encode("utf-8")
     class Meta:
         ordering = ["name"]
 
@@ -114,8 +116,12 @@ class Relation(models.Model):
     dst = models.ForeignKey(Node, related_name="dst")
     ref = models.PositiveIntegerField(unique=True, blank=True, null=True)
     subcluster = models.ManyToManyField(SubCluster)
+    firstseen = models.DateTimeField(blank=True, null=True)
+    lastseen = models.DateTimeField(blank=True, null=True)
     def __str__(self):
         return self.type.name
+    class Meta:
+        unique_together = (("type", "src", "dst"),)
 
 class RelationTemplate(models.Model):
     src_index = models.ForeignKey(NodeIndex, related_name="src_index")
@@ -123,3 +129,5 @@ class RelationTemplate(models.Model):
     dst_index = models.ForeignKey(NodeIndex, related_name="dst_index")
     def __str__(self):
         return "( " + str(self.src_index) + " ) " + str(self.type) + " ( " + str(self.dst_index) + " )"
+    class Meta:
+        unique_together = (("src_index", "type", "dst_index"),)

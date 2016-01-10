@@ -21,10 +21,9 @@ $(document).ready(
 
 {% block container %}
 
-<div class="col-md-4" id="form" >
+<div class="col-md-5" id="form" >
 
 <div class="panel panel-primary">
-
 <div class="panel-heading">SubCluster</div>
 <div class="panel-body">
 <form method=post>{% csrf_token %}
@@ -36,14 +35,32 @@ $(document).ready(
 <a class="btn btn-info btn-md" href="/visualize/subcluster">Visualize</a>
 <a class="btn btn-warning btn-md" href="/vis_anonymize/subcluster">Visualize(mask)</a>
 </form>
+</div><!--/.panel-body-->
+</div><!--/.panel-->
 
+<div class="panel panel-default">
+<div class="panel-heading">Import/Export {{model|capfirst}} </div>
+<div class="panel-body">
+
+<form enctype="multipart/form-data" method=post>{% csrf_token %}
+<table >
+{{iform.as_table}}
+</table>
+<br>
+<input class="btn btn-warning btn-md" type="submit" name="import_csv" value="Import CSV">
+<input class="btn btn-warning btn-md" type="submit" name="import_ioc" value="Import IOC">
+<hr>
+<a class="btn btn-info btn-md " href="/export/subcluster/">Export All SubCluster</a>
+<a class="btn btn-danger btn-md" href="/delete/subcluster">Delete All SubCluster</a>
+</form>
 </div><!--/.panel-body-->
 
 </div><!--/.panel-->
 
+
 </div><!--/#form-->
 
-<div id="list" class="col-md-8">
+<div id="list" class="col-md-7">
 
 <table id="subcluster_table" class="table table-condensed table-hover table-striped display">
 <thead><tr>

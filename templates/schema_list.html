@@ -21,7 +21,7 @@ $(document).ready(
 
 {% block container %}
 
-<div class="col-md-4" id="form" >
+<div class="col-md-5" id="form" >
 
 {% if iform %}
 <div class="panel panel-primary">
@@ -84,7 +84,7 @@ $(document).ready(
 
 </div><!--/#form-->
 
-<div id="list" class="col-md-8">
+<div id="list" class="col-md-7">
 
 <ul class="nav nav-pills">
 {% if index %}<li class="active" ><a data-toggle="tab" href="#index">Index({{index|length}})</a></li>{% endif %}
@@ -101,6 +101,7 @@ $(document).ready(
 <th>ID</th>
 <th>Label</th>
 <th>Primary Key</th>
+<th>Icon</th>
 </tr></thead>
 
 <tbody>
@@ -109,6 +110,7 @@ $(document).ready(
 <td>{{i.id}}</td>
 <td>{{i.label}}</td>
 <td>{{i.property_key}}</td>
+<td>{% if i.icon %}<span style="font-family: FontAwesome;">&#x{{i.icon}};</span>{% endif %}</td>
 </tr>
 {% endfor %}
 </tbody>

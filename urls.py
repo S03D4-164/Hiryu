@@ -1,11 +1,11 @@
 from django.conf.urls import include, url
 from django.contrib import admin
 from .views.schema import schema_list, ioc_schema_list
-from .views.db import db_list
+from .views.entity import db_list
 from .views.graphdb import graphdb_view
 from .views.visualize import visualize_view, vis_anonymize
 from .views.delete import delete_view
-from .views.export import export_relation, export_node
+from .views.export import export_relation, export_node, export_cluster, export_subcluster
 from .views.stix_export import export_stix
 from .views.cluster import cluster_list, cluster_view
 from .views.subcluster import subcluster_list, subcluster_view
@@ -33,6 +33,8 @@ urlpatterns = [
 	url(r'^export/relation/$', export_relation),
 	url(r'^export/node/(?P<model>\w+)/(?P<id>\d+)$', export_node),
 	url(r'^export/node/$', export_node),
+	url(r'^export/cluster/$', export_cluster),
+	url(r'^export/subcluster/$', export_subcluster),
 	url(r'^export/stix/(?P<model>\w+)/(?P<id>\d+)$', export_stix),
 	url(r'^delete/(?P<model>\w+)/(?P<id>\d+)$', delete_view),
 	url(r'^delete/(?P<model>\w+)$', delete_view),

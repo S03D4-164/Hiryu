@@ -7,6 +7,7 @@ from .graph import graph_init
 from .db import push_all_to_graph
 from .subcluster import create_subcluster
 from .ioc_import import import_ioc, pre_import_ioc
+from .csv_import import import_cluster
 
 def cluster_list(request):
     form = ClusterForm()
@@ -30,6 +31,12 @@ def cluster_list(request):
                     if tag:
                         c.tag = tag
                     c.save()
+        elif "delete" in request.POST:
+            return redirect("/delete/cluster")
+        elif "import_csv" in request.POST:
+            iform = UploadFileForm(request.POST, request.FILES)
+            if iform.is_valid():
+                import_cluster(request.FILES['file'])
         elif "import_ioc" in request.POST:
             iform = UploadFileForm(request.POST, request.FILES)
             if iform.is_valid():
@@ -98,7 +105,6 @@ def cluster_view(request, id):
                     }
                     return render(request, "import_view.html", context)
 
-    #rc = RequestContext(request, {
     c = {
         "form":form,
         "scform":scform,
@@ -109,6 +115,5 @@ def cluster_view(request, id):
         "relations":relations,
         "model":"cluster",
     }
-    #return render_to_response("cluster_view.html", rc)
     return render(request, "cluster_view.html", c)
 

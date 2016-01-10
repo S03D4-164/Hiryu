@@ -1,5 +1,5 @@
-import tldextract
-import socket
+import tldextract, socket
+from datetime import datetime
 
 from ..models import *
 from ..views.db import get_node_on_db
@@ -62,7 +62,14 @@ def hostname_rel(hostname, relname, dst, subcluster):
             src = hostname,
             dst = dst,
         )
-        if rel and subcluster:
+        if created:
+            rel.firstseen = datetime.now()
+            rel.lastseen = datetime.now()
+        else:
+            rel.lastseen = datetime.now()
+        rel.save()
+            
+        if subcluster:
             if not subcluster in rel.subcluster.all():
                 rel.subcluster.add(subcluster)
                 rel.save()

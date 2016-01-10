@@ -8,7 +8,6 @@ from .graph import graph_init
 
 
 def process_request(request):
-    print request.POST
     if "create_index" in request.POST:
         iform = IndexForm(request.POST)
         if iform.is_valid():
@@ -92,6 +91,7 @@ def schema_list(request):
             if iform.is_valid():
                 label = iform.cleaned_data["label"]
                 key = iform.cleaned_data["property_key"]
+                icon = iform.cleaned_data["icon"]
                 i = None
                 if label and key:
                     try:
@@ -105,6 +105,9 @@ def schema_list(request):
                             label = label,
                             property_key = key,
                         )
+                    if icon:
+                        i.icon = icon
+                        i.save()
                     ln = label.name
                     kn = key.name
                     try:
