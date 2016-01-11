@@ -1,12 +1,11 @@
-from django.shortcuts import render_to_response, redirect, render
-from django.template import RequestContext
+from django.shortcuts import redirect, render
 
 from ..models import *
 from ..forms import *
 from ..tasks import process_node
 from .db import push_all_to_graph, get_node_on_db, relform_to_localdb
 from .csv_import import import_subcluster
-from ioc_import import pre_import_ioc
+from .ioc_import import pre_import_ioc
 from .graph import graph_init
 from .visualize import create_dataset
 
@@ -174,7 +173,14 @@ def subcluster_view(request, id):
             return redirect("/subcluster/"+str(id))
         elif "push_all" in request.POST:
             push_all_to_graph(nodes, relations, graph)
-    d = create_dataset(nodes, relations, "subcluster", subcluster)
+
+    d = None
+    if "vis" in request.GET:
+        vis = request.GET.get("vis")
+        if vis == "1":
+            d = create_dataset(nodes, relations, "subcluster", subcluster)
+        elif vis == "2":
+            d = create_dataset(nodes, relations, "subcluster", subcluster, anonymize=True)
     c = {
         "form":form,
         "tform":tform,

@@ -1,5 +1,4 @@
-from django.shortcuts import render_to_response, redirect, render
-from django.template import RequestContext
+from django.shortcuts import redirect, render
 
 from ..models import *
 from ..forms import *
@@ -70,14 +69,14 @@ def cluster_view(request, id):
             form = ClusterForm(request.POST)
             if form.is_valid():
                 name = form.cleaned_data["name"].strip()
-                description = form.cleaned_data["description"]
-                firstseen = form.cleaned_data["firstseen"]
-                tag = form.cleaned_data["tag"]
                 if name and not name == cluster.name:
                     cluster.name = name
+                description = form.cleaned_data["description"]
                 cluster.description = description
+                firstseen = form.cleaned_data["firstseen"]
                 if firstseen:
                     cluster.firstseen = firstseen
+                tag = form.cleaned_data["tag"]
                 cluster.tag.clear()
                 cluster.tag = tag
                 cluster.save()

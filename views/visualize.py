@@ -1,5 +1,4 @@
-from django.shortcuts import render_to_response, redirect, render
-from django.template import RequestContext
+from django.shortcuts import redirect, render
 from django.db.models import Q
 from django.utils.safestring import SafeString
 
@@ -146,9 +145,13 @@ def create_dataset(node, rel, model, target, anonymize=None):
             for c in sc.cluster.all():
                 if not c.id in e["cid"]:
                     e["cid"].append(c.id)
-        for p in r.properties.all():
-            line = p.key.name.encode("utf8") + " : " + p.value.encode("utf8")
-            e["title"].append(line)
+        if anonymize:
+            #s["label"] = str(r.src.id)
+            e["title"] = ""
+        else:
+            for p in r.properties.all():
+                line = p.key.name.encode("utf8") + " : " + p.value.encode("utf8")
+                e["title"].append(line)
         if not e in edges:
             edges.append(e)
 

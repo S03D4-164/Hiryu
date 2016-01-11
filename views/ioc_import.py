@@ -1,4 +1,4 @@
-from django.shortcuts import render_to_response, redirect
+from django.shortcuts import redirect
 from ..models import *
 from ..tasks import process_node
 from .db import get_node_on_db

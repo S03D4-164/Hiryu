@@ -34,6 +34,7 @@ class SubClusterForm(forms.ModelForm):
         self.fields["firstseen"].input_formats = input_formats
         self.fields["tag"].required = False
 
+"""
 class VerboseRelForm(forms.Form):
     src_label = forms.CharField(max_length="200", required=False, label="Src Label")
     src_key = forms.CharField(max_length="200", required=False, label="Src Key")
@@ -42,6 +43,7 @@ class VerboseRelForm(forms.Form):
     dst_label = forms.CharField(max_length="200", required=False, label="Dst Label")
     dst_key = forms.CharField(max_length="200", required=False, label="Dst Key")
     dst_value = forms.CharField(max_length="200", required=False, label="Dst Value")
+"""
 
 class IndexForm(forms.ModelForm):
     new_label = forms.CharField(max_length="200", required=False)
@@ -90,7 +92,7 @@ class RelEditForm(forms.ModelForm):
     new_type = forms.CharField(max_length="200", required=False)
     class Meta:
         model = Relation
-        fields = ["type", "new_type", "subcluster"]
+        fields = ["type", "new_type", "firstseen", "lastseen", "subcluster"]
     def clean(self):
         t = self.cleaned_data["new_type"].strip()
         if t:
@@ -105,7 +107,6 @@ class RelTemplateForm(forms.ModelForm):
     class Meta:
         model = RelationTemplate
         fields = ["src_index", "dst_index", "type", "new_type"]
-        #fields = ["src_index", "type", "new_type", "dst_index"]
         labels = {
             'src_index': _('Source'),
             'dst_index': _('Destination'),
@@ -191,7 +192,7 @@ class EntityForm(forms.Form):
 class NodeForm(forms.ModelForm):
     class Meta:
         model = Node
-        fields = ["subcluster"]
+        fields = ["index", "subcluster"]
 
 class PropertyForm(forms.ModelForm):
     new_key = forms.CharField(max_length="200", required=False, label="New Key")

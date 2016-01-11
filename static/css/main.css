@@ -1,5 +1,5 @@
 textarea{
-	height:90px;
+	height:70px;
 	width:100%;
 }
 
@@ -15,7 +15,7 @@ pre {
 
 select[multiple]{
 	width:100%;
-	height:120px;
+	height:90px;
 }
 
 div {
@@ -27,7 +27,7 @@ table{
 }
 
 div#network {
-        height: 700px;
+        height: 600px;
         border: 1px solid lightgray;
 }
 

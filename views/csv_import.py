@@ -1,4 +1,4 @@
-from django.shortcuts import render_to_response, redirect
+from django.shortcuts import redirect
 from ..models import *
 from ..forms import UploadFileForm
 from .db import get_node_on_db
@@ -141,8 +141,8 @@ def import_subcluster(files):
 def import_node(files):
     fieldnames = (
         "node_label",
-        "primal_key",
-        "primal_value",
+        "primary_key",
+        "primary_value",
         "property_key",
         "property_value",
         "subcluster",
@@ -153,8 +153,8 @@ def import_node(files):
     for r in reader:
         node = get_node_on_db(
             r["node_label"],
-            r["primal_key"],
-            r["primal_value"],
+            r["primary_key"],
+            r["primary_value"],
         )
         if node:
             if r["property_key"] and r["property_value"]:

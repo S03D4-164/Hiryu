@@ -1,5 +1,4 @@
-from django.shortcuts import render_to_response, redirect, render
-from django.template import RequestContext
+from django.shortcuts import redirect, render
 from django.db.models import Q
 
 from ..models import *
@@ -92,16 +91,6 @@ def delete_view(request, model, id=None):
                 if model == "db":
                     for p in Property.objects.all():
                         p.delete()
-                    """
-                    for n in NodeLabel.objects.all():
-                        n.delete()
-                    for c in Cluster.objects.all():
-                        c.delete()
-                    for s in SubCluster.objects.all():
-                        s.delete()
-                    for r in RelType.objects.all():
-                        r.delete()
-                    """
                 if model == "graphdb":
                     graph = graph_init()
                     graph.delete_all()

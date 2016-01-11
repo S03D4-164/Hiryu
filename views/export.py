@@ -1,4 +1,4 @@
-from django.shortcuts import render_to_response, redirect
+from django.shortcuts import redirect
 from ..models import Cluster, SubCluster, Node, Relation
 
 import csv, os
@@ -114,8 +114,8 @@ def export_node(request, model=None, id=None):
     
     fieldnames = (
         "node_label",
-        "primal_key",
-        "primal_value",
+        "primary_key",
+        "primary_value",
         "property_key",
         "property_value",
         "subcluster",
@@ -131,8 +131,8 @@ def export_node(request, model=None, id=None):
     for n in node:
         dict = {
             "node_label":n.label.name.encode("utf8"),
-            "primal_key":n.key_property.key.name.encode("utf8"),
-            "primal_value":n.key_property.value.encode("utf8"),
+            "primary_key":n.key_property.key.name.encode("utf8"),
+            "primary_value":n.key_property.value.encode("utf8"),
             "property_key":None,
             "property_value":None,
             "subcluster":None,

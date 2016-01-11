@@ -1,5 +1,4 @@
-from django.shortcuts import render_to_response, redirect, render
-from django.template import RequestContext
+from django.shortcuts import redirect, render
 from django.contrib import messages
 
 from py2neo import watch, Graph, Node, Relationship
@@ -217,7 +216,6 @@ def graphdb_view(request):
         }
         indexes.append(index)
 
-    #rc = RequestContext(request, {
     c = {
         "form":form,
         "eform":eform,
@@ -225,5 +223,4 @@ def graphdb_view(request):
         "nodes":nlist,
         "indexes":indexes,
     }
-    #return render_to_response("graphdb_list.html", rc)
     return render(request, "graphdb_list.html", c)
