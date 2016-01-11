@@ -31,15 +31,17 @@ Hiryu is less powerful than these tools, however, it can store mostly schemaless
         $ django-admin startproject myproject
         $ cd myproject
         
-        # Install Hiryu
+        """Install Hiryu"""
         $ git clone https://github.com/S03D4-164/Hiryu.git Hiryu
         
+        """
         Edit myproject/settings.py
         1. Add 'Hiryu' to INSTALLED_APPS
         2. Edit DATABASES (postgresql is recommended)
         3. Change ROOT_URLCONF => 'Hiryu.urls'
         4. Add line => NEO4J_AUTH="<neo4j user>:<neo4j password>" 
            (or export above NEO4J_AUTH as env)
+        """
         
         """Create Django database"""
         $ python manage.py makemigrations Hiryu
