@@ -215,6 +215,7 @@ class PropertyForm(forms.ModelForm):
 
 class UploadFileForm(forms.Form):
     file = forms.FileField()
+    #postprocess = forms.BooleanField(required=False)
 
 class IOCTermForm(forms.ModelForm):
     iocterm = forms.ModelChoiceField(
@@ -230,3 +231,22 @@ class IOCTermForm(forms.ModelForm):
         self.fields["text"].label = "New IOC Term"
         self.fields["text"].required = False
         self.fields["allow_import"].widget = Select(choices=((0,"False"),(1,"True")))
+
+class TagForm(forms.ModelForm):
+    new_key = forms.CharField(max_length="200", required=False, label="New Key")
+    class Meta:
+        model = Tag
+        fields = ["key", "new_key", "value"]
+    def __init__(self, *args, **kwargs):
+        super(TagForm, self).__init__(*args, **kwargs)
+        self.fields["key"].required = False
+        self.fields["value"].required = False
+    def clean(self):
+        key = self.cleaned_data["key"]
+        nk = self.cleaned_data["new_key"].strip()
+        if not key and nk:
+            pk, created = PropertyKey.objects.get_or_create(
+                name = nk
+            )
+            self.cleaned_data["key"] = pk
+        return self.cleaned_data

@@ -52,9 +52,9 @@ $(document).ready(
 <div class="panel-body">
 
 <table class="table table-condensed"><tbody>
-<tr><th>ID</th><td><a href="/{{model}}/{{rel.id}}">{{rel.id}}</a></td></tr>
-<tr><th>Type</th><td>{{rel.type.name}}</td></tr>
+<tr><th>ID</th><td><a class="btn btn-primary btn-sm" href="/{{model}}/{{rel.id}}">{{rel.id}}</a></td></tr>
 <tr><th>Src Node</th><td><a href="/node/{{rel.src.id}}">{{rel.src.key_property.value}}</a></td></tr>
+<tr><th>Type</th><td>{{rel.type.name}}</td></tr>
 <tr><th>Dst Node</th><td><a href="/node/{{rel.dst.id}}">{{rel.dst.key_property.value}}</a></td></tr>
 <!--
 <tr><th>Fill Form</th>
@@ -77,9 +77,10 @@ $(document).ready(
 <input class="btn btn-danger btn-sm" type="submit" name="delete" value="Delete">
 <input class="btn btn-info btn-sm" type="submit" name="push_entity" value="Push to GraphDB">
 </form>
-<hr>
 </div>
-<a class="btn btn-info btn-md btn-block" href="/visualize/relation/{{rel.id}}">Visualize</a>
+<hr>
+<a class="btn btn-info btn-md " href="/vis_anonymize/relation/{{rel.id}}">Visualize(mask)</a>
+<a class="btn btn-warning btn-md " href="/visualize/relation/{{rel.id}}">Visualize</a>
 
 </div><!--/.panel-body-->
 
@@ -104,11 +105,48 @@ $(document).ready(
 </div><!--/col-md-5-->
 
 <div id="list" class="col-md-8">
+{% if dataset %}
+<div style="margin: 0 auto;" id="network" ></div>
+<script type="text/javascript">
+var nodes = [
+{% for n in dataset.nodes %}{
+        'id':'{{n.id}}',
+        'label':'{{n.label}}',
+        'group':'{{n.group}}',
+        'title': '<table>{% for t in n.title %}<tr><td>{{t|escapejs}}</td></tr>{% endfor %}</table>',
+},
+{% endfor %}];
+var edges = [
+{% for e in dataset.edges %}{
+        'from':'{{e.from}}',
+        'to':'{{e.to}}',
+        'label':'{{e.label}}',
+        'title': '<table>{% for t in e.title %}<tr><td>{{t|escapejs}}</td></tr>{% endfor %}</table>',
+},
+{% endfor %}];
+var container = document.getElementById('network');
+var data = {
+        nodes: nodes,
+        edges: edges
+};
+options = visOption();
+options.layout = {"randomSeed":1};
+var network = new vis.Network(container, data, options);
+</script>
+{% endif %}
 
 <ul class="nav nav-pills">
   <li class="active" ><a data-toggle="tab" href="#properties">Properties({{properties|length}})</a></li>
-<!--  <li ><a data-toggle="tab" href="#relation">Relation</a></li>-->
   <li ><a data-toggle="tab" href="#subcluster">SubCluster({{rel.subcluster.all|length}})</a></li>
+  <li class="dropdown">
+    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Visualize<span class="caret"></a>
+    <ul class="dropdown-menu">
+        <li ><a href="?vis=1">Show</a></li>
+        <li ><a href="?vis=2">Anonymize</a></li>
+        <li ><a href="?vis=0">Hide</a></li>
+    </ul>
+  </li>
+
 </ul>
 
 <div class="tab-content">

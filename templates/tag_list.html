@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}
+<title>Tag</title>
+{% endblock %}
+
+{% block jquery %}
+<script>
+$(document).ready(
+	function(){
+                $('#index_table').DataTable({"order":[0, 'desc']});
+                $('#reltemplate_table').DataTable({"order":[0, 'desc']});
+                $('#iocterm_table').DataTable({"order":[0, 'desc']});
+		//$('#id_firstseen').datetimepicker({
+		//	format:'Y-m-d H:i'
+		//});
+	}
+);
+</script>
+{% endblock%}
+
+{% block container %}
+
+<div class="col-md-5" id="form" >
+
+{% if tform %}
+<div class="panel panel-primary">
+<div class="panel-heading">Create Tag</div>
+<div class="panel-body">
+<form method=post>{% csrf_token %}
+<table class="table table-condensed">
+<tr><th class="col-sm-1"></th><td class="col-sm-3"></td></tr>
+{{tform.as_table}}
+</table>
+<input class="btn btn-primary btn-md" type="submit" name="create_tag" value="Update">
+</form>
+</div><!--/.panel-body-->
+</div><!--/.panel-->
+{% endif %}
+
+</div><!--/#form-->
+
+<div id="list" class="col-md-7">
+
+<div id="tag" >
+<table id="index_table" class="table table-condensed table-hover table-striped">
+
+<thead><tr >
+<th class="col-md-1">ID</th>
+<th class="col-md-5">Key</th>
+<th class="col-md-5">Value</th>
+<th class="col-md-1">Del</th>
+</tr></thead>
+
+<tbody>
+{% for t in tag %}
+<tr>
+<td>
+{{t.id}}
+</td>
+<td>{{t.key}}</td>
+<td>{{t.value}}</td>
+<td><a class="btn btn-default btn-xs" href="/delete/tag/{{t.id}}?next=/schema/tag/">x</a></td>
+</tr>
+{% endfor %}
+</tbody>
+
+</table>
+
+</div><!--/tag-->
+
+</div><!--/#list-->
+
+{% endblock %}

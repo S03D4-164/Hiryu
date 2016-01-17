@@ -22,7 +22,10 @@ class ClusterData(BaseDatatableView):
         if column == 'id':
             return '<a class="btn btn-primary" href="/cluster/{0}">{0}</a>'.format(row.id)
         elif column == 'description':
-            return '<pre>{0}</pre>'.format(row.description)
+            d = ""
+            if row.description:
+                d = row.description("utf-8")
+            return '<pre>{0}</pre>'.format(d)
         else:
             return super(ClusterData, self).render_column(row, column)
 
@@ -60,7 +63,7 @@ class SubClusterData(BaseDatatableView):
             td = ""
             if row.cluster:
                 for i in row.cluster.all():
-                    td += '<a href="/cluster/{0}">{1}</a><br>'.format(i.id, i.name)
+                    td += '<a href="/cluster/{0}">{1}</a><br>'.format(i.id, i.name.encode("utf-8"))
             return '{0}'.format(td)
         elif column == 'description':
             d = None
@@ -111,25 +114,26 @@ class NodeData(BaseDatatableView):
         if column == 'id':
             #left = '<a class="btn btn-default node_id btn-xs" value="{0}"><span class="glyphicon glyphicon-chevron-left"></span></a>'.format(row.id)
             id = '<a class="btn btn-primary btn-sm" href="/node/{0}">{0}</a>'.format(row.id)
-            #ref = '<a class="btn btn-default ">{0}</a>'.format(row.ref)
+            delete = '<a class="btn btn-default btn-xs" href="/delete/node/{0}">x</a>'.format(row.id)
+            ref = '<a class="btn btn-default btn-sm">{0}</a>'.format(row.ref)
             #return left+id+ref
-            return id
+            return id + ref + delete
         elif column == 'subcluster':
             td = "<table>"
             if row.subcluster:
                 for s in row.subcluster.all():
                     td += "<tr>"
-                    td += '<td><a href="/subcluster/{0}">{1}</a></td>'.format(s.id, s.name)
+                    td += '<td><a href="/subcluster/{0}">{1}</a></td>'.format(s.id, s.name.encode("utf-8"))
                     if s.cluster:
                         td += "<td>"
                         for c in s.cluster.all():
-                            td += '<a href="/cluster/{0}">{1}</a><br>'.format(c.id, c.name)
+                            td += '<a href="/cluster/{0}">{1}</a><br>'.format(c.id, c.name.encode("utf-8"))
                         td += "</td>"
                     td += "</tr>"
             td += "</table>"
             return '{0}'.format(td)
         elif column == 'label':
-            return '{0}'.format(row.label.name)
+            return '{0}'.format(row.label.name.encode("utf-8"))
         else:
             return super(NodeData, self).render_column(row, column)
 
@@ -168,19 +172,20 @@ class RelationData(BaseDatatableView):
         if column == 'id':
             #left = '<a class="btn btn-default rel_id btn-xs" value="{0}"><span class="glyphicon glyphicon-chevron-left"></span></a>'.format(row.id)
             id = '<a class="btn btn-primary btn-sm" href="/relation/{0}">{0}</a>'.format(row.id)
-            ref = '<a class="btn btn-default ">{0}</a>'.format(row.ref)
+            ref = '<a class="btn btn-default btn-sm">{0}</a>'.format(row.ref)
+            delete = '<a class="btn btn-default btn-xs" href="/delete/relation/{0}">x</a>'.format(row.id)
             #return left+id+ref
-            return id
+            return id + ref + delete
         elif column == 'subcluster':
             td = "<table>"
             if row.subcluster:
                 td += "<tr>"
                 for s in row.subcluster.all():
-                    td += '<td><a href="/subcluster/{0}">{1}</a></td>'.format(s.id, s.name)
+                    td += '<td><a href="/subcluster/{0}">{1}</a></td>'.format(s.id, s.name.encode("utf-8"))
                     if s.cluster:
                         td += "<td>"
                         for c in s.cluster.all():
-                            td += '<a href="/cluster/{0}">{1}</a><br>'.format(c.id, c.name)
+                            td += '<a href="/cluster/{0}">{1}</a><br>'.format(c.id, c.name.encode("utf-8"))
                         td += "</td>"
                 td += "</tr>"
             td += "</table>"

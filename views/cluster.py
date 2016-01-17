@@ -1,4 +1,5 @@
 from django.shortcuts import redirect, render
+from django.contrib import messages 
 
 from ..models import *
 from ..forms import *
@@ -35,11 +36,18 @@ def cluster_list(request):
         elif "import_csv" in request.POST:
             iform = UploadFileForm(request.POST, request.FILES)
             if iform.is_valid():
-                import_cluster(request.FILES['file'])
+                try:
+                    import_cluster(request.FILES['file'])
+                except Exception as e:
+                    messages.add_message(request, messages.WARNING, str(type(e)) + ": "+ str(e))
         elif "import_ioc" in request.POST:
             iform = UploadFileForm(request.POST, request.FILES)
             if iform.is_valid():
-                sc = pre_import_ioc(request.FILES['file'])
+                sc = None
+                try:
+                    sc = pre_import_ioc(request.FILES['file'])
+                except Exception as e:
+                    messages.add_message(request, messages.WARNING, str(type(e)) + ": "+ str(e))
                 if sc:
                     context = {
                         "subcluster":sc,

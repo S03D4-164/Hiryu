@@ -160,7 +160,8 @@ def import_ioc(request):
                             if sc:
                                 n.subcluster.add(sc)
                                 n.save()
-                            process_node.delay(n, sc)
+                            if "postprocess" in request.POST:
+                                process_node.delay(n, sc)
         if "cluster" in d:
             cluster = d["cluster"]
             c = None

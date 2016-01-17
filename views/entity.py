@@ -253,7 +253,6 @@ def db_view(request, entity=None):
                     if dst:
                         process_node.delay(dst)
         elif "import" in request.POST:
-            print "hoge"
             iform = UploadFileForm(request.POST, request.FILES)
             if iform.is_valid():
                 if entity == "node":

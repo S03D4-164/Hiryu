@@ -59,7 +59,9 @@ def delete_view(request, model, id=None):
             "name":"Graph DB",
         }
     elif model == "ioc":
-        target = OpenIOC.objects.get(pk=id)
+        target = IOCTerm.objects.get(pk=id)
+    elif model == "tag":
+        target = Tag.objects.get(pk=id)
 
     if request.method == "POST":
         if "return" in request.POST:
@@ -98,6 +100,10 @@ def delete_view(request, model, id=None):
             if model in ("cluster", "subcluster", "db", "graphdb", "node", "relation"):
                 return redirect("/" + model)
             else:
+                if "next" in request.GET:
+                    next = request.GET.get("next")
+                    if next:
+                        return redirect(next)
                 return redirect("/schema/graphdb/")
     c = {
         "model":model,

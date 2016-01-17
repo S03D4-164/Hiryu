@@ -18,6 +18,9 @@ $(document).ready(
        				$(".subcluster_form").toggle();
 	       		};
 	       	});
+                $('a[data-toggle="tab"]').on( 'shown.bs.tab', function (e) {
+                    $.fn.dataTable.tables( {visible: true, api: true} ).columns.adjust();
+                } );
 		$('#property_table').DataTable({"order":[0, 'desc']});
 		$('#relation_table').DataTable({"order":[0, 'desc']});
 		$('#subcluster_table').DataTable({"order":[0, 'desc']});
@@ -36,7 +39,6 @@ $(document).ready(
                 $('tbody').on('click', '.btn', function (e) {
                         table_btn($(this));
                 });
-
 	}
 );
 </script>
@@ -53,13 +55,19 @@ $(document).ready(
 
 <table class="table table-condensed"><tbody>
 <tr><th class="col-md-1"></th><td class="col-md-3"></td></tr>
-<tr><th >ID</th><td ><a href="/{{model}}/{{node.id}}">{{node.id}}</a>
+<tr><th >ID/Ref</th>
+<td >
+<a class="btn btn-primary btn-sm" href="/{{model}}/{{node.id}}">{{node.id}}</a>
+<a class="btn btn-default btn-sm">{{node.ref}}</a>
+</td></tr>
 <!--<a class="btn btn-default btn-xs node_id" value="{{node.id}}">E</a>-->
 </td></tr>
-<tr><th >Ref</th><td >{{node.ref}}</td></tr>
+<tr><th>Index</th><td>{{node.index}}</td></tr>
+<!--
 <tr><th>Label</th><td>{{node.label.name}}</td></tr>
-<tr><th>Primal Key</th><td>{{node.key_property.key.name}}</td></tr>
-<tr><th>Primal Value</th><td>{{node.key_property.value}}</td></tr>
+<tr><th>Primary Key</th><td>{{node.key_property.key.name}}</td></tr>
+-->
+<tr><th>Value</th><td>{{node.key_property.value}}</td></tr>
 </tbody></table>
 
 <button class="btn btn-default btn-sm btn-block btn-toggle" value="cluster_form">Edit {{modes|capfirst}}</button>
@@ -73,15 +81,16 @@ $(document).ready(
 <input class="btn btn-danger btn-sm" type="submit" name="delete" value="Delete">
 <input class="btn btn-info btn-sm" type="submit" name="push_entity" value="Push to Graph DB">
 </form>
-<hr>
 </div>
-<a class="btn btn-info btn-md btn-block" href="/visualize/node/{{node.id}}">Visualize</a>
+<hr>
+<a class="btn btn-info btn-md " href="/vis_anonymize/node/{{node.id}}">Visualize(mask)</a>
+<a class="btn btn-warning btn-md " href="/visualize/node/{{node.id}}">Visualize</a>
 
 </div><!--/.panel-body-->
 
 </div><!--/.panel-->
 
-<div class="panel panel-primary">
+<div class="panel panel-info">
 
 <div class="panel-heading">Manipulate Property</div>
 <div class="panel-body">
@@ -90,8 +99,8 @@ $(document).ready(
 <tr><th class="col-md-1"></th><td class="col-md-3"></td></tr>
 {{pform.as_table}}
 </table>
-<input class="btn btn-info btn-sm" type="submit" name="add_property" value="Add Property">
-<input class="btn btn-warning btn-sm" type="submit" name="remove_property" value="Remove Property">
+<input class="btn btn-info btn-md" type="submit" name="add_property" value="Add Property">
+<input class="btn btn-warning btn-md" type="submit" name="remove_property" value="Remove Property">
 </form>
 </div><!--/.panel-body-->
 
@@ -100,11 +109,51 @@ $(document).ready(
 </div><!--/col-md-5-->
 
 <div id="list" class="col-md-8">
+{% if dataset %}
+<div style="margin: 0 auto;" id="network" ></div>
+<script type="text/javascript">
+var nodes = [
+{% for n in dataset.nodes %}{
+        'id':'{{n.id}}',
+        'label':'{{n.label}}',
+        'group':'{{n.group}}',
+        'title': '<table>{% for t in n.title %}<tr><td>{{t|escapejs}}</td></tr>{% endfor %}</table>',
+},
+{% endfor %}];
+var edges = [
+{% for e in dataset.edges %}{
+        'from':'{{e.from}}',
+        'to':'{{e.to}}',
+        'label':'{{e.label}}',
+        'title': '<table>{% for t in e.title %}<tr><td>{{t|escapejs}}</td></tr>{% endfor %}</table>',
+},
+{% endfor %}];
+var container = document.getElementById('network');
+var data = {
+        nodes: nodes,
+        edges: edges
+};
+options = visOption();
+options.layout = {"randomSeed":1};
+var network = new vis.Network(container, data, options);
+</script>
+{% endif %}
+
 
 <ul class="nav nav-pills">
   <li class="active" ><a data-toggle="tab" href="#properties">Properties({{node.properties.all|length}})</a></li>
   <li ><a data-toggle="tab" href="#relation">Relation({{relation|length}})</a></li>
   <li ><a data-toggle="tab" href="#subcluster">SubCluster({{node.subcluster.all|length}})</a></li>
+  <li class="dropdown">
+    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Visualize<span class="caret"></a>
+    <ul class="dropdown-menu">
+        <li ><a href="?vis=1">Show</a></li>
+        <li ><a href="?vis=2">Anonymize</a></li>
+        <li ><a href="?vis=0">Hide</a></li>
+    </ul>
+  </li>
+
+
 </ul>
 
 <div class="tab-content">
@@ -134,11 +183,11 @@ $(document).ready(
 
 <table id="relation_table" class="table table-condensed table-stripe table-hover">
 <thead>
-<th class="col-sm-1">ID</th>
-<th class="col-sm-1">Src Node</th>
-<th class="col-sm-1">Relation</th>
-<th class="col-sm-1">Dst node</th>
-<th class="col-sm-4">Subcluster/Cluster</th>
+<th class="col-sm-1">ID/Ref</th>
+<th class="col-sm-2">Src Node</th>
+<th class="col-sm-1">Rel</th>
+<th class="col-sm-2">Dst node</th>
+<th class="col-sm-6">Subcluster/Cluster</th>
 </thead>
 <tbody>
 {% for r in relation %}
@@ -151,9 +200,9 @@ $(document).ready(
 <a class="btn btn-default btn-xs rel_id" value="{{r.id}}">E</a>
 -->
 </td>
-<td>{{r.src.key_property.value}}</td>
+<td><a href="/node/{{r.src.id}}">{{r.src.key_property.value}}</a></td>
 <td>{{r.type.name}}</td>
-<td>{{r.dst.key_property.value}}</td>
+<td><a href="/node/{{r.dst.id}}">{{r.dst.key_property.value}}</a></td>
 <!--
 <td><table>{% for p in r.properties.all %}
 <tr><th>{{p.key.name}}</th><td>{{p.value}}</td></tr>

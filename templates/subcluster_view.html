@@ -104,11 +104,6 @@ $(document).ready(
 <input class="btn btn-danger btn-sm" type="submit" name="delete_all" value="Delete All Entity">
 </form>
 </div>
-<hr>
-<a class="btn btn-primary btn-md " href="/visualize/subcluster/{{cluster.id}}">Visualize</a>
-<a class="btn btn-warning btn-md " href="/vis_anonymize/subcluster/{{cluster.id}}">Visualize(mask)</a>
-<a class="btn btn-info btn-md " href="/export/node/subcluster/{{cluster.id}}">Export Node</a>
-<a class="btn btn-info btn-md " href="/export/relation/subcluster/{{cluster.id}}">Export Relation</a>
 
 </div><!--/.panel-body-->
 
@@ -156,7 +151,7 @@ $(document).ready(
 
 <div id="list" class="col-md-7">
 
-<div id="vis">
+{% if dataset %}
 <div style="margin: 0 auto;" id="network" ></div>
 <script type="text/javascript">
 var nodes = [
@@ -167,7 +162,6 @@ var nodes = [
         'title': '<table>{% for t in n.title %}<tr><td>{{t|escapejs}}</td></tr>{% endfor %}</table>',
 },
 {% endfor %}];
-
 var edges = [
 {% for e in dataset.edges %}{
         'from':'{{e.from}}',
@@ -176,40 +170,46 @@ var edges = [
         'title': '<table>{% for t in e.title %}<tr><td>{{t|escapejs}}</td></tr>{% endfor %}</table>',
 },
 {% endfor %}];
-
 var container = document.getElementById('network');
 var data = {
         nodes: nodes,
         edges: edges
 };
-var options = {
-    "layout":{"randomSeed":1},
-    "physics": {
-        barnesHut: {
-            springLength: 150,
-            avoidOverlap: 0.1,
-        },
-        "minVelocity":1,
-    },
-};
 options = visOption();
 options.layout = {"randomSeed":1};
 var network = new vis.Network(container, data, options);
 </script>
-</div><!--vis-->
-<hr>
+{% endif %}
 
 <ul class="nav nav-pills">
-  <li class="active" ><a data-toggle="tab" href="#node">Node({{nodes|length}})</a></li>
+  <li class="active"><a data-toggle="tab" href="#node">Node({{nodes|length}})</a></li>
   <li ><a data-toggle="tab" href="#relation">Relation({{relations|length}})</a></li>
   <li ><a data-toggle="tab" href="#cluster">Cluster({{cluster.cluster.all|length}})</a></li>
+  <li class="dropdown">
+    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Visualize<span class="caret"></a>
+    <ul class="dropdown-menu">
+        <li ><a href="?vis=1">Show</a></li>
+        <li ><a href="?vis=2">Anonymize</a></li>
+        <li ><a href="?vis=0">Hide</a></li>
+        <li ><a href="/visualize/subcluster/{{cluster.id}}">Large View</a>
+        <li ><a href="/vis_anonymize/subcluster/{{cluster.id}}">Large View(Anonymized)</a>
+    </ul>
+  </li>
+  <li class="dropdown">
+    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Export<span class="caret"></a>
+    <ul class="dropdown-menu">
+        <li ><a href="/export/node/subcluster/{{cluster.id}}">Export Node</a></li>
+        <li ><a href="/export/relation/subcluster/{{cluster.id}}">Export Relation</a></li>
+        <li ><a href="/export/openioc/subcluster/{{cluster.id}}">Export OpenIOC</a></li>
+        <li ><a href="/export/stix/subcluster/{{cluster.id}}">Export STIX</a></li>
+    </ul>
+  </li>
 </ul>
 
 <div class="tab-content">
 
 <div class="tab-pane active" id="node" >
 <table id="node_table" class="table table-condensed table-stripe table-hover display" width="100%">
-
 <thead><tr>
 <th class="col-sm-1">ID</th>
 <th class="col-sm-1">Label</th>
@@ -218,11 +218,9 @@ var network = new vis.Network(container, data, options);
 <th class="col-sm-4">SubCluster/Cluster</th>
 </tr></thead>
 </table>
-
 </div><!--/#node-->
 
 <div class="tab-pane" id="relation" >
-
 <table id="relation_table" class="table table-condensed table-stripe table-hover display" width="100%">
 <thead>
 <th class="col-sm-1">ID</th>
@@ -234,11 +232,9 @@ var network = new vis.Network(container, data, options);
 <th class="col-sm-3">Dst node</th>
 </thead>
 </table>
-
 </div><!--/#relation-->
 
 <div class="tab-pane" id="cluster" >
-
 <table id="cluster_table" class="table table-condensed table-stripe table-hover display" width="100%">
 <thead>
 <th class="col-md-1">ID</th>
@@ -247,12 +243,12 @@ var network = new vis.Network(container, data, options);
 <th class="col-md-1">Firstseen</th>
 </thead>
 </table>
-
 </div><!--/#cluster-->
 
 </div><!--/tab-content-->
 
-
 </div><!--/.col-md-8-->
+
+</div>
 
 {% endblock %}

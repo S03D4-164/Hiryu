@@ -35,11 +35,12 @@ $(document).ready(
 
 <div class="panel-heading">Import</div>
 <div class="panel-body">
-<h4>Are you sure?</h4>
 <form id="import_form" method=post >{% csrf_token %}
 <input type="hidden" name="subcluster" value="{{subcluster}}">
-<input id="return" class="btn btn-primary btn-md" type="submit" name="return" value="Return">
-<button id="import" type="button" class="btn" name="import" value="Import">import</button>
+Postprocess:<input type="checkbox" name="postprocess">
+<br><br>
+<input id="return" class="btn" type="submit" name="return" value="Return">
+<button id="import" type="button" class="btn btn-info" name="import" value="Import">Import</button>
 </form>
 
 </div><!--/.panel-body-->

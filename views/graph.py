@@ -1,4 +1,4 @@
-from py2neo import watch, Graph
+from py2neo import watch, Graph, authenticate
 
 def graph_init():
     watch("httpstream")

@@ -1,9 +1,13 @@
 from django.shortcuts import redirect
 from ..models import *
 
-import os
-from stix.indicator.indicator import Indicator
-from stix.common.information_source import InformationSource
+import os, logging
+#from stix.indicator.indicator import Indicator
+#from stix.common.information_source import InformationSource
+
+from ioc_writer import ioc_api
+
+log = logging.getLogger(__name__)
 
 appdir =  os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
@@ -111,7 +115,10 @@ def add_indicators_to_pkg(indicators, pkg):
         pkg.add_indicator(i)
     return pkg
 
-def export_stix(request, model, id):
+def export_ioc(request, model, id):
+    ioc = ioc_api.IOC(name="ioc_name")
+    ioc.set_lastmodified_date()
+    """
     c = None
     if model == "cluster":
         c = Cluster.objects.get(pk=id)
@@ -168,11 +175,14 @@ def export_stix(request, model, id):
     ]
     indicators = add_relcampaign_to_indicators(campaign, indicators)
     pkg = add_indicators_to_pkg(indicators, pkg)
+    """
 
-    out = "/static/export/stix_" + model + id + ".xml"
-    fh = open(appdir + out, "wb")
-    fh.write(pkg.to_xml())
-    fh.close()
+    #out = "/static/export/openioc_" + model + id + ".xml"
+    out = "/static/export/"
+    #fh = open(appdir + out, "wb")
+    #fh.write(pkg.to_xml())
+    #fh.close()
+    ioc.write_ioc_to_file(out)
 
     return redirect(out)
 
