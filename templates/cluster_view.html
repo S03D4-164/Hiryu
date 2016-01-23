@@ -129,12 +129,12 @@ Create SubCluster
 
 <div class="panel panel-default">
 
-<div class="panel-heading">Import/Export {{model|capfirst}} </div>
+<div class="panel-heading">Import/Export</div>
 <div class="panel-body">
 
 <a class="btn btn-info btn-md " href="/export/node/cluster/{{cluster.id}}">Export Node</a>
 <a class="btn btn-info btn-md " href="/export/relation/cluster/{{cluster.id}}">Export Relation</a>
-<a class="btn btn-info btn-md " href="/export/stix/cluster/{{cluster.id}}">Export STIX</a>
+<!--<a class="btn btn-info btn-md " href="/export/stix/cluster/{{cluster.id}}">Export STIX</a>-->
 <hr>
 <form enctype="multipart/form-data" method=post>{% csrf_token %}
 <table >
@@ -142,6 +142,7 @@ Create SubCluster
 </table>
 <br>
 <input class="btn btn-warning btn-md" type="submit" name="import_ioc" value="Import IOC">
+<input class="btn btn-warning btn-md" type="submit" name="import_stix" value="Import STIX">
 </form>
 </div><!--/.panel-body-->
 
@@ -190,11 +191,11 @@ Create SubCluster
 
 <table id="relation_table" class="table table-condensed table-stripe table-hover display" width="100%">
 <thead>
-<th class="col-sm-1">ID</th>
+<th class="col-sm-2">ID</th>
 <th class="col-sm-2">First seen</th>
 <th class="col-sm-0.5"></th>
 <th class="col-sm-3">Src Node</th>
-<th class="col-sm-2">Relation</th>
+<th class="col-sm-1">Relation</th>
 <th class="col-sm-0.5"></th>
 <th class="col-sm-3">Dst node</th>
 </thead>

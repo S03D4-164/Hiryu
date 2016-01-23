@@ -7,45 +7,72 @@ import re, tldextract, ast
 import lxml.objectify
 
 
-def metadata_to_subcluster(m):
-    cluster = {
-        "name": m.authored_by,
-        "id": None,
-    }
+def campaign_to_subcluster(sc, c = None):
+    cluster = {}
+    if c:
+        cluster = {
+            "name": c.name,
+            "id": c.id,
+        }
+    """
     try:
         c = Cluster.objects.get(name=m.authored_by)
         cluster["id"] = c.id
     except:
         pass
+    """
 
     subcluster = {
-        "name": m.short_description,
-        "description": m.description,
-        "firstseen": str(m.authored_date),
+        "name": sc.title,
+        "description": sc.description.value,
+        "firstseen": str(sc.timestamp),
         "cluster": cluster,
         "id": None,
         "tag":{},
     }
+
+    """
     for link in m.links.link:
         rel = link.attrib.get("rel")
         subcluster["tag"][rel] = link
+    """
+
     try:
-        sc = SubCluster.objects.get(name=m.short_description)
-        subcluster["id"] = sc.id
+        s = SubCluster.objects.get(name=sc.title)
+        subcluster["id"] = s.id
     except:
         pass
     return subcluster
 
 
-def ii_to_ni(ii):
+def object_to_node(o):
+    node = {"import":True}
+    d = o.to_dict()
+    p = d["object"]["properties"]
+    type = None
+    if "xsi:type" in p:
+        type = p["xsi:type"]
+        node["search"] = type
+    index = {}
+    if type == "AddressObjectType":
+        node["content"] = p["address_value"]
+        index["label"] = "IP"
+        index["key"] = "address"
+    elif type == "HostnameObjectType":
+        node["content"] = p["hostname_value"]
+        index["label"] = "Host"
+        index["key"] = "name"
+    elif type == "DomainNameObjectType":
+        node["content"] = p["value"]
+        index["label"] = "Domain"
+        index["key"] = "name"
+
+    if index:
+        node["index"] = index
+
+    """
     search = ii.Context.attrib.get("search")
     content = str(ii.Content).strip()
-    node = {
-        "search": search,
-        "content": content,
-        "import": False,
-        "index": None,
-    }
     try:
         it = IOCTerm.objects.get(text=search)
         if it.index:
@@ -59,11 +86,19 @@ def ii_to_ni(ii):
             node["import"] = it.allow_import
     except:
         pass
+    """
 
     return node
 
 
-def indicator_to_node(i, sc):
+def obs_to_node(obs, sc):
+    for o in obs:
+        n = object_to_node(o)
+        if not n in sc["node"]:
+            sc["node"].append(n)
+    print sc    
+            
+    """
     if hasattr(i, "IndicatorItem"):
         for ii in i.IndicatorItem:
             n = ii_to_ni(ii)
@@ -71,31 +106,30 @@ def indicator_to_node(i, sc):
                 sc["node"].append(n)
     if hasattr(i, "Indicator"):
         i = indicator_to_node(i.Indicator, sc)
+    """
     return sc
 
 
-def pre_import_ioc(file):
-    ioco = lxml.objectify.parse(file)
-    root = ioco.getroot()
-    sc = {}
-    if "ioc" in root.tag:
-        sc = metadata_to_subcluster(root)
-        if sc:
-            sc["node"] = []
-            sc = indicator_to_node(root.definition, sc)
-    elif "OpenIOC" in root.tag:
-        #sc = metadata_to_subcluster(root.metadata, cluster)
-        sc = metadata_to_subcluster(root.metadata)
-        if sc:
-            sc["node"] = []
-            sc = indicator_to_node(root.criteria, sc)
+def pre_import_stix(file, cluster=None):
+    from stix.core import STIXPackage  
+    pkg = STIXPackage()
+
+    pkg = pkg.from_xml(file)
+    campaigns= pkg.campaigns
+    obs = pkg.observables
+
+    sc = campaign_to_subcluster(campaigns[0], cluster)
+    if sc:
+        sc["node"] = []
+        sc = obs_to_node(obs, sc)
+        #sc["cluster"] = cluster
+        
     return sc
     
 
-def import_ioc(request):
+def import_stix(request):
     if request.method == "POST":
         subcluster = request.POST["subcluster"]
-        print subcluster
         d = ast.literal_eval(subcluster)
         sc = None
         if "id" in d:

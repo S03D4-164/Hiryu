@@ -24,7 +24,7 @@ class ClusterData(BaseDatatableView):
         elif column == 'description':
             d = ""
             if row.description:
-                d = row.description("utf-8")
+                d = row.description.encode("utf-8")
             return '<pre>{0}</pre>'.format(d)
         else:
             return super(ClusterData, self).render_column(row, column)
@@ -114,7 +114,7 @@ class NodeData(BaseDatatableView):
         if column == 'id':
             #left = '<a class="btn btn-default node_id btn-xs" value="{0}"><span class="glyphicon glyphicon-chevron-left"></span></a>'.format(row.id)
             id = '<a class="btn btn-primary btn-sm" href="/node/{0}">{0}</a>'.format(row.id)
-            delete = '<a class="btn btn-default btn-xs" href="/delete/node/{0}">x</a>'.format(row.id)
+            delete = '<a class="btn btn-danger btn-xs" href="/delete/node/{0}">x</a>'.format(row.id)
             ref = '<a class="btn btn-default btn-sm">{0}</a>'.format(row.ref)
             #return left+id+ref
             return id + ref + delete
@@ -173,7 +173,7 @@ class RelationData(BaseDatatableView):
             #left = '<a class="btn btn-default rel_id btn-xs" value="{0}"><span class="glyphicon glyphicon-chevron-left"></span></a>'.format(row.id)
             id = '<a class="btn btn-primary btn-sm" href="/relation/{0}">{0}</a>'.format(row.id)
             ref = '<a class="btn btn-default btn-sm">{0}</a>'.format(row.ref)
-            delete = '<a class="btn btn-default btn-xs" href="/delete/relation/{0}">x</a>'.format(row.id)
+            delete = '<a class="btn btn-danger btn-xs" href="/delete/relation/{0}">x</a>'.format(row.id)
             #return left+id+ref
             return id + ref + delete
         elif column == 'subcluster':

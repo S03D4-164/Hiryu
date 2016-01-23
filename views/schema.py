@@ -16,10 +16,11 @@ def tag_list(request):
                 try:
                     t = Tag.objects.get(
                         key = key,
+                        value = value,
                     )
-                    if t:
-                        t.value = value
-                        t.save()
+                    #if t:
+                    #    t.value = value
+                    #    t.save()
                 except:
                     t = Tag.objects.create(
                         key = key,
@@ -32,6 +33,7 @@ def tag_list(request):
     }
     return render(request, "tag_list.html", c)
     
+
 def edit_index(request, next=None):
     if "create_index" in request.POST:
         iform = IndexForm(request.POST)

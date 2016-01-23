@@ -7,6 +7,7 @@ from .graph import graph_init
 from .db import push_all_to_graph
 from .subcluster import create_subcluster
 from .ioc_import import import_ioc, pre_import_ioc
+from .stix_import import pre_import_stix
 from .csv_import import import_cluster
 
 def cluster_list(request):
@@ -108,6 +109,19 @@ def cluster_view(request, id):
                         "subcluster":sc,
                         #"cluster":sc["cluster"],
                         "cluster":cluster,
+                        "node":sc["node"],
+                    }
+                    return render(request, "import_view.html", context)
+        elif "import_stix" in request.POST:
+            iform = UploadFileForm(request.POST, request.FILES)
+            if iform.is_valid():
+                #import_ioc(request.FILES['file'], cluster)
+                sc = pre_import_stix(request.FILES['file'], cluster=cluster)
+                if sc:
+                    context = {
+                        "subcluster":sc,
+                        #"cluster":sc["cluster"],
+                        "cluster":sc["cluster"],
                         "node":sc["node"],
                     }
                     return render(request, "import_view.html", context)
