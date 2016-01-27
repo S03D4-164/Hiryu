@@ -68,7 +68,7 @@ class SubClusterData(BaseDatatableView):
         elif column == 'description':
             d = None
             if row.description:
-                d = row.description[0:100]
+                d = row.description[0:100].encode("utf-8")
             return '<pre>{0}</pre>'.format(d)
         elif column == 'tag':
             td = ""
