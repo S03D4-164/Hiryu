@@ -108,10 +108,10 @@ $(document).ready(
 <tbody>
 {% for n in node %}
 <tr>
-<td>{{n.id}}</td>
-<td>{{n.label}}</td>
-<td>{{n.key_property.key.name}}</td>
-<td>{{n.key_property.value}}</td>
+<td><a class="btn btn-primary" href="/node/{{n.id}}">{{n.id}}</a></td>
+<td>{{n.index.label.name}}</td>
+<td>{{n.index.property_key.name}}</td>
+<td>{{n.value}}</td>
 </tr>
 {% endfor %}
 </tbody>
@@ -131,10 +131,10 @@ $(document).ready(
 <tbody>
 {% for r in relation %}
 <tr>
-<td>{{r.id}}</td>
-<td>{{r.src.key_property.value}}</td>
+<td><a class="btn btn-primary" href="/relation/{{r.id}}">{{r.id}}</a></td>
+<td>{{r.src.value}}</td>
 <td>{{r.type}}</td>
-<td>{{r.dst.key_property.value}}</td>
+<td>{{r.dst.value}}</td>
 </tr>
 {% endfor %}
 </tbody>

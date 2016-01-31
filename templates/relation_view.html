@@ -44,30 +44,14 @@ $(document).ready(
 
 {% block container %}
 
-<div class="col-md-4" id="form" >
-
-<div class="panel panel-primary">
-
-<div class="panel-heading">{{model|capfirst}}</div>
-<div class="panel-body">
-
-<table class="table table-condensed"><tbody>
-<tr><th>ID</th><td><a class="btn btn-primary btn-sm" href="/{{model}}/{{rel.id}}">{{rel.id}}</a></td></tr>
-<tr><th>Src Node</th><td><a href="/node/{{rel.src.id}}">{{rel.src.value}}</a></td></tr>
-<tr><th>Type</th><td>{{rel.type.name}}</td></tr>
-<tr><th>Dst Node</th><td><a href="/node/{{rel.dst.id}}">{{rel.dst.value}}</a></td></tr>
-<!--
-<tr><th>Fill Form</th>
-<td>
-<a class="btn btn-default btn-xs rel_id" value="{{rel.id}}">E</a>
-<a class="btn btn-default btn-xs node_id from_s" value="{{rel.src.id}}">S</a>
-<a class="btn btn-default btn-xs node_id from_d" value="{{rel.dst.id}}">D</a>
-</td></tr>
--->
-</tbody></table>
-
-<button class="btn btn-default btn-sm btn-block btn-toggle" value="cluster_form">Edit {{modes|capfirst}}</button>
-<div class="cluster_form">
+<div class="modal" id="rel_form" role="dialog">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+<button type="button" class="close" data-dismiss="modal">&times;</button>
+<h4 class="modal-title">Edit Node</h4>
+</div>
+<div class="modal-body">
 <form method=post>{% csrf_token %}
 <table class="table table-condensed">
 <tr><th class="col-md-1"></th><td class="col-md-3"></td></tr>
@@ -77,10 +61,27 @@ $(document).ready(
 <input class="btn btn-danger btn-sm" type="submit" name="delete" value="Delete">
 <input class="btn btn-info btn-sm" type="submit" name="push_entity" value="Push to GraphDB">
 </form>
-</div>
-<hr>
-<a class="btn btn-info btn-md " href="/vis_anonymize/relation/{{rel.id}}">Visualize(mask)</a>
-<a class="btn btn-warning btn-md " href="/visualize/relation/{{rel.id}}">Visualize</a>
+</div><!--/.modal-body-->
+</div><!--/.modal-content-->
+</div><!--/.modal-dialog-->
+</div><!--/.modal-->
+
+
+<div class="col-md-4" id="form" >
+
+<div class="panel panel-primary">
+
+<div class="panel-heading">{{model|capfirst}}</div>
+<div class="panel-body">
+
+<table class="table table-condensed"><tbody>
+<tr><th class="col-md-3">ID</th><td><a class="btn btn-primary btn-sm" href="/{{model}}/{{rel.id}}">{{rel.id}}</a></td></tr>
+<tr><th>Src Node</th><td><a href="/node/{{rel.src.id}}">{{rel.src.value}}</a></td></tr>
+<tr><th>Type</th><td>{{rel.type.name}}</td></tr>
+<tr><th>Dst Node</th><td><a href="/node/{{rel.dst.id}}">{{rel.dst.value}}</a></td></tr>
+</tbody></table>
+
+<a class="btn btn-default" data-toggle="modal" href="#rel_form">Edit</a></li>
 
 </div><!--/.panel-body-->
 
@@ -94,8 +95,8 @@ $(document).ready(
 <table class="table table-condensed">
 {{pform.as_table}}
 </table>
-<input class="btn btn-info btn-sm" type="submit" name="add_property" value="Add Property">
-<input class="btn btn-warning btn-sm" type="submit" name="remove_property" value="Remove Property">
+<input class="btn btn-info btn-md" type="submit" name="add_property" value="Add Property">
+<input class="btn btn-warning btn-md" type="submit" name="remove_property" value="Remove Property">
 <br><br>
 </form>
 </div><!--/.panel-body-->
@@ -144,6 +145,8 @@ var network = new vis.Network(container, data, options);
         <li ><a href="?vis=1">Show</a></li>
         <li ><a href="?vis=2">Anonymize</a></li>
         <li ><a href="?vis=0">Hide</a></li>
+        <li ><a href="/visualize/relation/{{rel.id}}">Large view</a></li>
+        <li ><a href="/vis_anonymize/relation/{{rel.id}}">Large view(mask)</a></li>
     </ul>
   </li>
 
@@ -155,9 +158,9 @@ var network = new vis.Network(container, data, options);
 <table id="property_table" class="table table-condensed table-stripe table-hover">
 
 <thead><tr>
-<th>ID</th>
-<th>Key</th>
-<th>Value</th>
+<th class="col-md-1">ID</th>
+<th clas="col-md-5">Key</th>
+<th class="col-md-6">Value</th>
 </tr></thead>
 
 <tbody>
@@ -213,9 +216,9 @@ var network = new vis.Network(container, data, options);
 
 <table id="subcluster_table" class="table table-condensed table-stripe table-hover">
 <thead>
-<th>ID</th>
-<th>SubCluster</th>
-<th>Cluster</th>
+<th class="col-md-1">ID</th>
+<th class="col-md-6">SubCluster</th>
+<th class="col-md-5">Cluster</th>
 </thead>
 <tbody>
 {% for s in rel.subcluster.all %}

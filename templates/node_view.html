@@ -46,32 +46,14 @@ $(document).ready(
 
 {% block container %}
 
-<div class="col-md-4" id="form" >
-
-<div class="panel panel-primary">
-
-<div class="panel-heading">{{model|capfirst}}</div>
-<div class="panel-body">
-
-<table class="table table-condensed"><tbody>
-<tr><th class="col-md-1"></th><td class="col-md-3"></td></tr>
-<tr><th >ID/Ref</th>
-<td >
-<a class="btn btn-primary btn-sm" href="/{{model}}/{{node.id}}">{{node.id}}</a>
-<a class="btn btn-default btn-sm">{{node.ref}}</a>
-</td></tr>
-<!--<a class="btn btn-default btn-xs node_id" value="{{node.id}}">E</a>-->
-</td></tr>
-<tr><th>Index</th><td>{{node.index}}</td></tr>
-<!--
-<tr><th>Label</th><td>{{node.label.name}}</td></tr>
-<tr><th>Primary Key</th><td>{{node.key_property.key.name}}</td></tr>
--->
-<tr><th>Value</th><td>{{node.key_property.value}}</td></tr>
-</tbody></table>
-
-<button class="btn btn-default btn-sm btn-block btn-toggle" value="cluster_form">Edit {{modes|capfirst}}</button>
-<div class="cluster_form">
+<div class="modal" id="node_form" role="dialog">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+<button type="button" class="close" data-dismiss="modal">&times;</button>
+<h4 class="modal-title">Edit Node</h4>
+</div>
+<div class="modal-body">
 <form method=post>{% csrf_token %}
 <table class="table table-condensed">
 <tr><th class="col-md-1"></th><td class="col-md-3"></td></tr>
@@ -81,32 +63,44 @@ $(document).ready(
 <input class="btn btn-danger btn-sm" type="submit" name="delete" value="Delete">
 <input class="btn btn-info btn-sm" type="submit" name="push_entity" value="Push to Graph DB">
 </form>
-</div>
-<hr>
-<a class="btn btn-info btn-md " href="/vis_anonymize/node/{{node.id}}">Visualize(mask)</a>
-<a class="btn btn-warning btn-md " href="/visualize/node/{{node.id}}">Visualize</a>
+</div><!--/.modal-body-->
+</div><!--/.modal-content-->
+</div><!--/.modal-dialog-->
+</div><!--/.modal-->
 
+<div class="col-md-4">
+
+<div class="panel panel-primary">
+<div class="panel-heading">{{model|capfirst}}</div>
+<div class="panel-body">
+<table class="table table-condensed"><tbody>
+<tr><th class="col-md-3">ID/Ref</th>
+<td >
+<a class="btn btn-primary btn-sm" href="/{{model}}/{{node.id}}">{{node.id}}</a>
+<a class="btn btn-default btn-sm">{{node.ref}}</a>
+</td></tr>
+<!--<a class="btn btn-default btn-xs node_id" value="{{node.id}}">E</a>-->
+</td></tr>
+<tr><th>Index</th><td>{{node.index}}</td></tr>
+<tr><th>Value</th><td>{{node.value}}</td></tr>
+</tbody></table>
+<a class="btn btn-default" data-toggle="modal" href="#node_form">Edit</a></li>
 </div><!--/.panel-body-->
-
 </div><!--/.panel-->
 
 <div class="panel panel-info">
-
 <div class="panel-heading">Manipulate Property</div>
 <div class="panel-body">
 <form method=post>{% csrf_token %}
 <table class="table table-condensed">
-<tr><th class="col-md-1"></th><td class="col-md-3"></td></tr>
 {{pform.as_table}}
 </table>
 <input class="btn btn-info btn-md" type="submit" name="add_property" value="Add Property">
 <input class="btn btn-warning btn-md" type="submit" name="remove_property" value="Remove Property">
 </form>
 </div><!--/.panel-body-->
-
 </div><!--/.panel-->
-
-</div><!--/col-md-5-->
+</div>
 
 <div id="list" class="col-md-8">
 {% if dataset %}
@@ -150,6 +144,8 @@ var network = new vis.Network(container, data, options);
         <li ><a href="?vis=1">Show</a></li>
         <li ><a href="?vis=2">Anonymize</a></li>
         <li ><a href="?vis=0">Hide</a></li>
+        <li ><a href="/visualize/node/{{node.id}}">Large view</a>
+        <li ><a href="/vis_anonymize/node/{{node.id}}">Large view(mask)</a>
     </ul>
   </li>
 
@@ -183,7 +179,8 @@ var network = new vis.Network(container, data, options);
 
 <table id="relation_table" class="table table-condensed table-stripe table-hover">
 <thead>
-<th class="col-sm-1">ID/Ref</th>
+<th class="col-sm-1">ID</th>
+<th class="col-sm-1">Ref</th>
 <th class="col-sm-2">Src Node</th>
 <th class="col-sm-1">Rel</th>
 <th class="col-sm-2">Dst node</th>
@@ -192,22 +189,11 @@ var network = new vis.Network(container, data, options);
 <tbody>
 {% for r in relation %}
 <tr>
-<td>
-<a class="btn btn-info btn-sm" href="/relation/{{r.id}}">{{r.id}}</a>
-<a class="btn btn-default btn-sm" >{{r.ref}}</a>
-<br><br>
-<!--
-<a class="btn btn-default btn-xs rel_id" value="{{r.id}}">E</a>
--->
-</td>
-<td><a href="/node/{{r.src.id}}">{{r.src.key_property.value}}</a></td>
+<td><a class="btn btn-info btn-sm" href="/relation/{{r.id}}">{{r.id}}</a></td>
+<td><a class="btn btn-default btn-sm" >{{r.ref}}</a></td>
+<td><a href="/node/{{r.src.id}}">{{r.src.value}}</a></td>
 <td>{{r.type.name}}</td>
-<td><a href="/node/{{r.dst.id}}">{{r.dst.key_property.value}}</a></td>
-<!--
-<td><table>{% for p in r.properties.all %}
-<tr><th>{{p.key.name}}</th><td>{{p.value}}</td></tr>
-{% endfor %}</table></td>
--->
+<td><a href="/node/{{r.dst.id}}">{{r.dst.value}}</a></td>
 <td><table class="table">
 {% for s in r.subcluster.all %}
 <tr><td><a href="/subcluster/{{s.id}}">{{s.name}}</a></td>
@@ -228,8 +214,8 @@ var network = new vis.Network(container, data, options);
 <table id="subcluster_table" class="table table-condensed table-stripe table-hover">
 <thead>
 <th class="col-md-1">ID</th>
-<th class="col-md-4">SubCluster</th>
-<th class="col-md-3">Cluster</th>
+<th class="col-md-6">SubCluster</th>
+<th class="col-md-5">Cluster</th>
 </thead>
 <tbody>
 {% for s in node.subcluster.all %}

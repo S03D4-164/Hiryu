@@ -86,9 +86,10 @@ def edit_index(request, next=None):
             messages.add_message(request, messages.WARNING, "Error: " + str(e))
     elif "delete_index" in request.POST:
         index = None
-        if next == "/schema/graphdb/":
+        if next == "/schema/db/":
             rtform = RelTemplateForm(request.POST)
-            index = rtform.cleaned_data["src_index"]
+            if rtform.is_valid():
+                index = rtform.cleaned_data["src_index"]
         elif next == "/schema/openioc/":
             tform = IOCTermForm(request.POST)
             if tform.is_valid():
@@ -210,15 +211,15 @@ def schema_list(request):
         if "create_index" in request.POST:
             result = edit_index(request)
         elif "delete_label" in request.POST:
-            result = edit_index(request, "/schema/graphdb/")
+            result = edit_index(request, "/schema/db/")
             if result:
                 return result
         elif "delete_key" in request.POST:
-            result = edit_index(request, "/schema/graphdb/")
+            result = edit_index(request, "/schema/db/")
             if result:
                 return result
         elif "delete_index" in request.POST:
-            result = edit_index(request, "/schema/graphdb/")
+            result = edit_index(request, "/schema/db/")
             if result:
                 return result
         elif "rename_label" in request.POST:
@@ -268,14 +269,15 @@ def schema_list(request):
                 if rtform.is_valid():
                     src_index = rtform.cleaned_data["src_index"]
                     nodes = Node.objects.filter(
-                        label=src_index.label,
-                        key_property__key=src_index.property_key
+                        #label=src_index.label,
+                        #key_property__key=src_index.property_key
+                        index = src_index
                     )
                     dst_index = rtform.cleaned_data["dst_index"]
                 for n in nodes:
                     n.index = dst_index
-                    n.label = dst_index.label
-                    n.key_property.key = dst_index.property_key
+                    #n.label = dst_index.label
+                    #n.key_property.key = dst_index.property_key
                     n.save()
             except Exception as e:
                 messages.add_message(request, messages.WARNING, "Error: " + str(e))
@@ -284,7 +286,7 @@ def schema_list(request):
             try:
                 if rtform.is_valid():
                     type = rtform.cleaned_data["type"]
-                    return redirect("/delete/reltype/" + str(type.id))
+                    return redirect("/delete/reltype/" + str(type.id) + "?next=/schema/db/")
             except Exception as e:
                 messages.add_message(request, messages.WARNING, "Error: " + str(e))
 

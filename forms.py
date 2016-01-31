@@ -167,7 +167,7 @@ class EntityForm(forms.Form):
 class NodeForm(forms.ModelForm):
     class Meta:
         model = Node
-        fields = ["index", "subcluster"]
+        fields = ["index", "value", "subcluster"]
 
 class PropertyForm(forms.ModelForm):
     new_key = forms.CharField(max_length="200", required=False, label="New Key")

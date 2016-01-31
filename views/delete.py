@@ -32,13 +32,16 @@ def delete_view(request, model, id=None):
     elif model == "property_key":
         target = PropertyKey.objects.get(pk=id)
         property = Property.objects.filter(key=target)
-        node = Node.objects.filter(key_property__in=property)
+        #node = Node.objects.filter(key_property__in=property)
+        node = Node.objects.filter(index__property_key=target)|Node.objects.filter(properties__in=property)
     elif model == "label":
         target = NodeLabel.objects.get(pk=id)
         index = NodeIndex.objects.filter(label=target)
-        node = Node.objects.filter(label=target)
+        #node = Node.objects.filter(label=target)
+        node = Node.objects.filter(index__label=target)
     elif model == "index":
         target = NodeIndex.objects.get(pk=id)
+        node = Node.objects.filter(index=target)
     elif model == "reltype":
         target = RelType.objects.get(pk=id)
         relation = Relation.objects.filter(type=target)
@@ -77,7 +80,7 @@ def delete_view(request, model, id=None):
             elif model == "db" or model == "graphdb":
                 return redirect("/" + model)
             else:
-                return redirect("/schema/graphdb/")
+                return redirect("/schema/db/")
         elif "delete" in request.POST:
             if id:
                 target.delete()

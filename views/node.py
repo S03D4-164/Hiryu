@@ -27,6 +27,10 @@ def node_view(request, id):
                 if not node.index == index:
                     node.index = index
                     node.save()
+                value = nform.cleaned_data["value"]
+                if not node.value == value:
+                    node.value = value
+                    node.save()
                 subcluster = nform.cleaned_data["subcluster"]
                 if subcluster:
                     node.subcluster.clear()
