@@ -96,7 +96,7 @@ def obs_to_node(obs, sc):
         n = object_to_node(o)
         if not n in sc["node"]:
             sc["node"].append(n)
-    print sc    
+    #print sc    
             
     """
     if hasattr(i, "IndicatorItem"):
@@ -118,7 +118,9 @@ def pre_import_stix(file, cluster=None):
     campaigns= pkg.campaigns
     obs = pkg.observables
 
-    sc = campaign_to_subcluster(campaigns[0], cluster)
+    sc = None
+    if campaigns:
+        sc = campaign_to_subcluster(campaigns[0], cluster)
     if sc:
         sc["node"] = []
         sc = obs_to_node(obs, sc)

@@ -37,7 +37,8 @@ def export_ioc(request, model, id):
                 search = term.text
                 document = search.split("/")[0]
                 condition = "is"
-                content = n.key_property.value
+                #content = n.key_property.value
+                content = n.value
                 content_type = "string"
                 ii_node = ioc_api.make_indicatoritem_node(condition, document, search, content_type, content)
                 top_level_or_node.append(ii_node)

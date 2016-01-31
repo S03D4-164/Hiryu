@@ -53,9 +53,9 @@ $(document).ready(
 
 <table class="table table-condensed"><tbody>
 <tr><th>ID</th><td><a class="btn btn-primary btn-sm" href="/{{model}}/{{rel.id}}">{{rel.id}}</a></td></tr>
-<tr><th>Src Node</th><td><a href="/node/{{rel.src.id}}">{{rel.src.key_property.value}}</a></td></tr>
+<tr><th>Src Node</th><td><a href="/node/{{rel.src.id}}">{{rel.src.value}}</a></td></tr>
 <tr><th>Type</th><td>{{rel.type.name}}</td></tr>
-<tr><th>Dst Node</th><td><a href="/node/{{rel.dst.id}}">{{rel.dst.key_property.value}}</a></td></tr>
+<tr><th>Dst Node</th><td><a href="/node/{{rel.dst.id}}">{{rel.dst.value}}</a></td></tr>
 <!--
 <tr><th>Fill Form</th>
 <td>

@@ -6,7 +6,7 @@ from django.db import models
 
 class PropertyKey(models.Model):
     name = models.CharField(unique=True, max_length=200)
-    def __unicode__(self):
+    def __str__(self):
         return self.name.encode("utf-8")
     class Meta:
         ordering = ["name"]
@@ -50,6 +50,10 @@ class Reference(models.Model):
     class Meta:
         ordering = ["location"]
 
+class Event(models.Model):
+    description = models.TextField(blank=True, null=True)
+    created = models.DateTimeField(auto_now_add=True)
+
 class SubCluster(models.Model):
     #name = models.CharField(unique=True, max_length=200)
     name = models.CharField(max_length=200)
@@ -77,7 +81,12 @@ class NodeIndex(models.Model):
     property_key = models.ForeignKey(PropertyKey)
     icon = models.CharField(max_length=200, blank=True, null=True)
     def __str__(self):
-        return str(self.label.name + " " + self.property_key.name)
+        #return str(self.label.name + " " + self.property_key.name)
+        #return str(self.label.name.encode("utf-8") + " " + self.property_key.name.encode("utf-8"))
+        
+        l = self.label.name.encode("utf-8")
+        k = self.property_key.name.encode("utf-8")
+        return str(l) + str(" ") + str(k)
     class Meta:
         unique_together = (("label", "property_key"),)
 
@@ -90,17 +99,32 @@ class IOCTerm(models.Model):
     def __str__(self):
         return self.text.encode("utf-8")
 
+class CybOXObj(models.Model):
+    #text = models.CharField(max_length=200, unique=True)
+    name = models.CharField(max_length=200)
+    index = models.ForeignKey(NodeIndex, blank=True, null=True)
+    allow_import = models.BooleanField(default=False)
+    allow_export = models.BooleanField(default=False)
+    def __str__(self):
+        return self.name.encode("utf-8")
+
 class Node(models.Model):
     index = models.ForeignKey(NodeIndex, related_name="node_index")
-    label = models.ForeignKey(NodeLabel)
-    key_property = models.ForeignKey(Property, related_name="key_property")
+    value = models.CharField(max_length=2000)
+    #label = models.ForeignKey(NodeLabel)
+    #key_property = models.ForeignKey(Property, related_name="key_property")
     properties = models.ManyToManyField(Property, related_name="node_properties")
     ref = models.PositiveIntegerField(unique=True, blank=True, null=True)
     subcluster = models.ManyToManyField(SubCluster)
+    created = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    #def __str__(self):
+    #    return str(self.label.name + " - " + self.key_property.key.name + " - " + self.key_property.value.encode("utf-8"))
+    #class Meta:
+    #    unique_together = (("label", "key_property"),)
     def __str__(self):
-        return str(self.label.name + " - " + self.key_property.key.name + " - " + self.key_property.value.encode("utf-8"))
+        return str(self.index) + str(" - ") + self.value.encode("utf-8")
     class Meta:
-        unique_together = (("label", "key_property"),)
+        unique_together = (("index", "value"),)
 
 class RelType(models.Model):
     name = models.CharField(unique=True, max_length=200)
@@ -128,6 +152,12 @@ class RelationTemplate(models.Model):
     type = models.ForeignKey(RelType)
     dst_index = models.ForeignKey(NodeIndex, related_name="dst_index")
     def __str__(self):
-        return "( " + str(self.src_index) + " ) " + str(self.type) + " ( " + str(self.dst_index) + " )"
+        #return "( " + str(self.src_index) + " ) " + str(self.type) + " ( " + str(self.dst_index) + " )"
+        s = self.src_index.label.name + u" " + self.src_index.property_key.name
+        t = self.type.name
+        d = self.dst_index.label.name + u" " + self.dst_index.property_key.name
+        r = s + u" - " + t + u" - " + d
+        return r.encode("utf-8")
     class Meta:
         unique_together = (("src_index", "type", "dst_index"),)
+

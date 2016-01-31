@@ -34,37 +34,12 @@ class SubClusterForm(forms.ModelForm):
         self.fields["firstseen"].input_formats = input_formats
         self.fields["tag"].required = False
 
-"""
-class VerboseRelForm(forms.Form):
-    src_label = forms.CharField(max_length="200", required=False, label="Src Label")
-    src_key = forms.CharField(max_length="200", required=False, label="Src Key")
-    src_value = forms.CharField(max_length="200", required=False, label="Src Value")
-    rel = forms.CharField(max_length="200", required=False, label="Relation")
-    dst_label = forms.CharField(max_length="200", required=False, label="Dst Label")
-    dst_key = forms.CharField(max_length="200", required=False, label="Dst Key")
-    dst_value = forms.CharField(max_length="200", required=False, label="Dst Value")
-"""
 
 class IndexForm(forms.ModelForm):
     new_label = forms.CharField(max_length="200", required=False)
     new_key = forms.CharField(max_length="200", required=False)
-    """
-    node_index = forms.ModelChoiceField(
-        queryset=NodeIndex.objects.all(),
-        label="Node Index",
-        required=False,
-    )
-    ioc_term = forms.ModelChoiceField(
-        queryset=IOCTerm.objects.all(),
-        label="OpenIOC Term",
-        required=False,
-    )
-    new_ioc = forms.CharField(max_length="200", required=False)
-    ioc_import = forms.BooleanField(required=False)
-    """
     class Meta:
         model = NodeIndex
-        #fields = ["node_index", "label", "new_label", "property_key", "new_key"]
         fields = ["label", "new_label", "property_key", "new_key", "icon"]
     def __init__(self, *args, **kwargs):
         super(IndexForm, self).__init__(*args, **kwargs)
@@ -225,12 +200,29 @@ class IOCTermForm(forms.ModelForm):
     )
     class Meta:
         model = IOCTerm
-        fields = ["iocterm", "text", "index", "allow_import"]
+        fields = ["iocterm", "text", "index", "allow_import", "allow_export"]
     def __init__(self, *args, **kwargs):
         super(IOCTermForm, self).__init__(*args, **kwargs)
         self.fields["text"].label = "New IOC Term"
         self.fields["text"].required = False
         self.fields["allow_import"].widget = Select(choices=((0,"False"),(1,"True")))
+        self.fields["allow_export"].widget = Select(choices=((0,"False"),(1,"True")))
+
+class CybObjForm(forms.ModelForm):
+    cybobj = forms.ModelChoiceField(
+        queryset=CybOXObj.objects.all(),
+        label="Cybox Object",
+        required=False,
+    )
+    class Meta:
+        model = CybOXObj
+        fields = ["cybobj", "name", "index", "allow_import", "allow_export"]
+    def __init__(self, *args, **kwargs):
+        super(CybObjForm, self).__init__(*args, **kwargs)
+        self.fields["name"].label = "New Object"
+        self.fields["name"].required = False
+        self.fields["allow_import"].widget = Select(choices=((0,"False"),(1,"True")))
+        self.fields["allow_export"].widget = Select(choices=((0,"False"),(1,"True")))
 
 class TagForm(forms.ModelForm):
     new_key = forms.CharField(max_length="200", required=False, label="New Key")

@@ -21,36 +21,34 @@ $(document).ready(
 
 {% block container %}
 
-<div class="col-md-5" id="form" >
-
-<div class="panel panel-primary">
-
-<div class="panel-heading">Cluster</div>
-<div class="panel-body">
+<div class="modal" id="form" role="dialog">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+<button type="button" class="close" data-dismiss="modal">&times;</button>
+<h4 class="modal-title">Create Cluster</h4> 
+</div>
+<div class="modal-body">
 <form method=post>{% csrf_token %}
 <table class="table table-condensed">
 <tr><th class="col-sm-1"></th><td class="col-sm-3"></td></tr>
 {{form.as_table}}
 </table>
 <input class="btn btn-primary btn-md" type="submit" name="create" value="Create">
-<a class="btn btn-info btn-md" href="/visualize/cluster">Visualize</a>
-<a class="btn btn-warning btn-md" href="/vis_anonymize/cluster">Visualize(mask)</a>
 </form>
+</div><!--/.modal-body-->
+</div><!--/.modal-content-->
+</div><!--/.modal-dialog-->
+</div><!--/.modal-->
 
-</div><!--/.panel-body-->
-
-</div><!--/.panel-->
-
-<div class="panel panel-default">
-
-<div class="panel-heading">Import/Export {{model|capfirst}} </div>
-<div class="panel-body">
-
-<!--
-<a class="btn btn-info btn-md " href="/export/node/">Export Node</a>
-<a class="btn btn-info btn-md " href="/export/relation/">Export Relation</a>
-<a class="btn btn-info btn-md " href="/export/subcluster/">Export SubCluster</a>
--->
+<div class="modal" id="import_form" role="dialog">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+<button type="button" class="close" data-dismiss="modal">&times;</button>
+<h4 class="modal-title">Import/Export {{model|capfirst}}</h4> 
+</div>
+<div class="modal-body">
 <form enctype="multipart/form-data" method=post>{% csrf_token %}
 <table >
 {{iform.as_table}}
@@ -63,20 +61,29 @@ $(document).ready(
 <a class="btn btn-info btn-md " href="/export/cluster/">Export All Cluster</a>
 <input class="btn btn-danger btn-md" type="submit" name="delete" value="Delete All Cluster">
 </form>
-</div><!--/.panel-body-->
+</div><!--/.modal-body-->
+</div><!--/.modal-content-->
+</div><!--/.modal-dialog-->
+</div><!--/.modal-->
 
-</div><!--/.panel-->
-
-</div><!--/#form-->
-
-<div id="list" class="col-md-7">
-
+<div id="list" class="col-md-12">
+<h2>Cluster</h2>
+<ul class="nav nav-pills">
+<li ><a data-toggle="modal" href="#form">Create</a></li> 
+<li ><a data-toggle="modal" href="#import_form">Import/Export</a></li> 
+<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Visualize<span class="caret"></span></a>
+<ul class="dropdown-menu">
+<li><a href="/visualize/cluster">Visualize</a></li>
+<li><a href="/vis_anonymize/cluster">Anonymize</a></li>
+</ul></li>
+</ul>
+<hr>
 <table id="cluster_table" class="table table-condensed table-hover table-striped display" cellspacing="0" width="100%">
 <thead><tr >
 <th class="col-md-1">id</th>
-<th class="col-md-2">name</th>
-<th class="col-md-4">description</th>
-<th class="col-md-1">firstseen</th>
+<th class="col-md-3">name</th>
+<th class="col-md-6">description</th>
+<th class="col-md-2">firstseen</th>
 </tr></thead>
 </table>
 

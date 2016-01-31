@@ -63,8 +63,10 @@ def create_dataset(node, rel, model, target, anonymize=None):
     for i in node:
         n = {
             'id': i.id,
-            'label': i.key_property.value.encode("utf8"),
-            'group': i.label.name.encode("utf8"),
+            #'label': i.key_property.value.encode("utf8"),
+            'label': i.value.encode("utf8"),
+            #'group': i.label.name.encode("utf8"),
+            'group': i.index.label.name.encode("utf8"),
             'title':[],
             'scid': [],
             'cid': [],
@@ -87,8 +89,10 @@ def create_dataset(node, rel, model, target, anonymize=None):
     for r in rel:
         s = {
             'id': r.src.id,
-            'label': r.src.key_property.value.encode("utf8"),
-            'group': r.src.label.name.encode("utf8"),
+            #'label': r.src.key_property.value.encode("utf8"),
+            'label': r.src.value.encode("utf8"),
+            #'group': r.src.label.name.encode("utf8"),
+            'group': r.src.index.label.name.encode("utf8"),
             'title':[],
             'scid': [],
             'cid': [],
@@ -110,8 +114,10 @@ def create_dataset(node, rel, model, target, anonymize=None):
             nodes.append(s)
         d = {
             'id': r.dst.id,
-            'label': r.dst.key_property.value.encode("utf8"),
-            'group': r.dst.label.name.encode("utf8"),
+            #'label': r.dst.key_property.value.encode("utf8"),
+            'label': r.dst.value.encode("utf8"),
+            #'group': r.dst.label.name.encode("utf8"),
+            'group': r.dst.index.label.name.encode("utf8"),
             'title':[],
             'scid': [],
             'cid': [],

@@ -1,5 +1,6 @@
-from django.shortcuts import render_to_response, redirect
+from django.shortcuts import render, redirect
 from django.template import RequestContext
+from django.contrib import messages
 
 from py2neo import watch, Graph, Node, Relationship
 
@@ -7,8 +8,14 @@ from ..forms import *
 from ..models import *
 from .graph import graph_init
 from .csv_import import import_node, import_relation
+from .ioc_import import import_ioc, pre_import_ioc
+from .stix_import import pre_import_stix
+from .db import relform_to_localdb
+from .schema import edit_index
+
 from multiprocessing import Process, Queue
 
+"""
 def set_properties_to_node(node, properties):
     cluster = []
     subcluster = []
@@ -230,43 +237,85 @@ def remove_property_from_entity(e, pform):
                 e.properties.remove(p)
     e.save()
     return e
+"""
 
 def db_list(request):
-    rc = db_view(request)
-    return render_to_response("db_list.html", rc)
+    if "import_ioc" in request.POST:
+        ufform = UploadFileForm(request.POST, request.FILES)
+        if ufform.is_valid():
+            sc = None
+            try:
+                sc = pre_import_ioc(request.FILES['file'])
+            except Exception as e:
+                messages.add_message(request, messages.WARNING, str(type(e)) + ": "+ str(e))
+            if sc:
+                context = {
+                    "subcluster":sc,
+                    "cluster":sc["cluster"],
+                    "node":sc["node"],
+                }
+                return render(request, "import_view.html", context)
+    elif "import_stix" in request.POST:
+        iform = UploadFileForm(request.POST, request.FILES)
+        if iform.is_valid():
+            sc = pre_import_stix(request.FILES['file'])
+            if sc:
+                context = {
+                    "subcluster":sc,
+                    "cluster":sc["cluster"],
+                    "node":sc["node"],
+                }
+                return render(request, "import_view.html", context)
+            else:
+                messages.add_message(request, messages.WARNING, "Import failed: Invalid file.")
+
+
+    c = db_view(request)
+    return render(request, "db_list.html", c)
 
 def db_view(request, entity=None):
     graph = graph_init()
-    form = RelCreateForm()
-    eform = EntitySelectForm()
-    iform = UploadFileForm()
+    rcform = RelCreateForm()
+    rtform = RelTemplateForm()
+    esform = EntitySelectForm()
+    ufform = UploadFileForm()
+    iform = IndexForm()
     if request.method == "POST":
         if "create" in request.POST:
-            form = RelCreateForm(request.POST)
-            if form.is_valid():
-                src, dst, rel = relform_to_localdb(form, graph)
-                postprocess = form.cleaned_data["postprocess"]
+            rcform = RelCreateForm(request.POST)
+            if rcform.is_valid():
+                src, dst, rel = relform_to_localdb(rcform, graph)
+                postprocess = rcform.cleaned_data["postprocess"]
                 if postprocess:
                     from ..tasks import process_node
                     if src:
                         process_node.delay(src)
                     if dst:
                         process_node.delay(dst)
-        elif "import" in request.POST:
-            iform = UploadFileForm(request.POST, request.FILES)
+        elif "create_index" in request.POST:
+            iform = IndexForm(request.POST)
             if iform.is_valid():
-                if entity == "node":
-                    import_node(request.FILES['file'])
-                elif entity == "relation":
-                    import_relation(request.FILES['file'])
+                edit_index(request)
+        elif "create_template" in request.POST:
+            rtform = RelTemplateForm(request.POST)
+            if rtform.is_valid():
+                edit_index(request)
+        elif "import_node" in request.POST:
+            ufform = UploadFileForm(request.POST, request.FILES)
+            if ufform.is_valid():
+                import_node(request.FILES['file'])
+        elif "import_relation" in request.POST:
+            ufform = UploadFileForm(request.POST, request.FILES)
+            if ufform.is_valid():
+                import_relation(request.FILES['file'])
         elif "push" in request.POST:
-            eform = EntitySelectForm(request.POST)
-            if eform.is_valid():
-                push_entity_to_graph(eform, graph)
+            esform = EntitySelectForm(request.POST)
+            if esform.is_valid():
+                push_entity_to_graph(esform, graph)
         elif "delete" in request.POST:
-            eform = EntitySelectForm(request.POST)
-            if eform.is_valid():
-                delete_entity_from_db(eform)
+            esform = EntitySelectForm(request.POST)
+            if esform.is_valid():
+                delete_entity_from_db(esform)
         elif "push_all" in request.POST:
             from ..tasks import push_db_to_graph
             push_db_to_graph.delay(entity)
@@ -283,13 +332,20 @@ def db_view(request, entity=None):
     relations = None
     if not entity or entity == "relation":
         relations = Relation.objects.all().order_by("-id")
+    """
+    index = NodeIndex.objects.all().order_by("-id")
+    reltemplate = RelationTemplate.objects.all().order_by("-id")
+    """
     if not entity:
         entity = "db"
     c = {
-        "form":form,
+        "rcform":rcform,
+        "rtform":rtform,
+        "esform":esform,
+        "ufform":ufform,
         "iform":iform,
-        "eform":eform,
         "nodes":nodes,
+        #"index":index,
         "relations":relations,
         "model":entity,
     }

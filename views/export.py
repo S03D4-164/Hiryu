@@ -130,9 +130,10 @@ def export_node(request, model=None, id=None):
     writer.writeheader()
     for n in node:
         dict = {
-            "node_label":n.label.name.encode("utf8"),
-            "primary_key":n.key_property.key.name.encode("utf8"),
-            "primary_value":n.key_property.value.encode("utf8"),
+            #"node_label":n.label.name.encode("utf8"),
+            "node_label":n.index.label.name.encode("utf8"),
+            "primary_key":n.index.property_key.name.encode("utf8"),
+            "primary_value":n.value.encode("utf8"),
             "property_key":None,
             "property_value":None,
             "subcluster":None,
@@ -229,15 +230,15 @@ def export_relation(request, model=None, id=None):
     writer.writeheader()
     for r in rel:
         dict = {
-            "src_label":r.src.label.name.encode("utf8"),
-            "src_key":r.src.key_property.key.name.encode("utf8"),
-            "src_value":r.src.key_property.value.encode("utf8"),
+            "src_label":r.src.index.label.name.encode("utf8"),
+            "src_key":r.src.index.property_key.name.encode("utf8"),
+            "src_value":r.src.value.encode("utf8"),
             "rel_type":r.type.name.encode("utf8"),
             "property_key":None,
             "property_value":None,
-            "dst_label":r.dst.label.name.encode("utf8"),
-            "dst_key":r.dst.key_property.key.name.encode("utf8"),
-            "dst_value":r.dst.key_property.value.encode("utf8"),
+            "dst_label":r.dst.index.label.name.encode("utf8"),
+            "dst_key":r.dst.index.property_key.name.encode("utf8"),
+            "dst_value":r.dst.value.encode("utf8"),
             "subcluster":None,
             "cluster":None,
         }

@@ -33,6 +33,12 @@ def relation_view(request, id):
                 rel.subcluster.clear()
                 for s in subcluster:
                     rel.subcluster.add(s)
+                    src = rel.src
+                    src.subcluster.add(s)
+                    src.save()
+                    dst = rel.dst
+                    dst.subcluster.add(s)
+                    dst.save()
                 rel.save()
         elif "delete" in request.POST:
             return redirect("/delete/relation/" + id)

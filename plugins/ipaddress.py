@@ -5,7 +5,8 @@ from ..models import *
 from ..views.db import get_node_on_db
 
 def whois_ip(ip, subcluster = None):
-    i = ip.key_property.value
+    #i = ip.key_property.value
+    i = ip.value
     results = None
     try:
         obj = IPWhois(i)

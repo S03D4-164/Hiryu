@@ -155,12 +155,15 @@ def import_ioc(request):
                         if label and property and index:
                             n, created = Node.objects.get_or_create(
                                 index = index,
-                                label = label,
-                                key_property = property,
+                                value = property.value
+                                #label = label,
+                                #key_property = property,
                             )
+                            if n and property:
+                                n.properties.add(property)
                             if sc:
                                 n.subcluster.add(sc)
-                                n.save()
+                            n.save()
                             if "postprocess" in request.POST:
                                 process_node.delay(n, sc)
         if "cluster" in d:
@@ -173,10 +176,11 @@ def import_ioc(request):
                 except:
                     pass
             if not c:
-                c, created = Cluster.objects.get_or_create(
-                   name = cluster["name"],
-                )
-            if sc:
+                if "name" in cluster:
+                    c, created = Cluster.objects.get_or_create(
+                        name = cluster["name"],
+                    )
+            if sc and c:
                 sc.cluster.add(c)
                 sc.save()
     return redirect("/subcluster/")

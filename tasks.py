@@ -17,7 +17,8 @@ from .plugins.ipaddress import whois_ip
 #@app.task(rate_limit='5/m')
 @app.task(soft_time_limit=60)
 def process_node(node, subcluster = None):
-    nodetype = str(node.label.name + node.key_property.key.name).lower()
+    #nodetype = str(node.label.name + node.key_property.key.name).lower()
+    nodetype = str(node.index.label.name + node.index.property_key.name).lower()
     if re.search("hostname", nodetype):
         parse_hostname(node, subcluster)
     elif re.search("domainname", nodetype):

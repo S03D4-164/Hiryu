@@ -49,11 +49,13 @@ def edit_index(request, next=None):
                     )
                     i.property_key = key
                     i.save()
+                    messages.add_message(request, messages.INFO, "Index updated: " + str(i))
                 except:
                     i = NodeIndex.objects.create(
                         label = label,
                         property_key = key,
                     )
+                    messages.add_message(request, messages.INFO, "Index created: " + str(i))
                 if icon:
                     i.icon = icon
                     i.save()
@@ -96,6 +98,21 @@ def edit_index(request, next=None):
                 return redirect("/delete/index/" + str(index.id) + "?next=" + next)
             except Exception as e:
                 messages.add_message(request, messages.WARNING, "Error: " + str(e))
+    elif "create_template" in request.POST:
+        rtform = RelTemplateForm(request.POST)
+        try:
+            if rtform.is_valid():
+                src_index = rtform.cleaned_data["src_index"]
+                type = rtform.cleaned_data["type"]
+                dst_index = rtform.cleaned_data["dst_index"]
+                rt, created = RelationTemplate.objects.get_or_create(
+                    src_index = src_index,
+                    type = type,
+                    dst_index = dst_index,
+                )
+                messages.add_message(request, messages.INFO, "Template created: " + str(rt))
+        except Exception as e:
+            messages.add_message(request, messages.WARNING, "Error: " + str(e))
     return
 
 def ioc_schema_list(request):
@@ -119,12 +136,14 @@ def ioc_schema_list(request):
                 text = tform.cleaned_data["text"]
                 index = tform.cleaned_data["index"]
                 allow_import = tform.cleaned_data["allow_import"]
+                allow_export = tform.cleaned_data["allow_export"]
                 ioc, created = IOCTerm.objects.get_or_create(
                     text = text
                 )
                 if ioc:
                     ioc.index = index
                     ioc.allow_import = allow_import
+                    ioc.allow_export = allow_export
                     ioc.save()
         elif "delete_ioc" in request.POST:
             tform = IOCTermForm(request.POST)
@@ -139,6 +158,49 @@ def ioc_schema_list(request):
     }
     return render(request, "schema_list.html", c)
 
+def stix_schema_list(request):
+    iform = IndexForm()
+    tform = CybObjForm()
+    if request.method == "POST":
+        if "create_index" in request.POST:
+            edit_index(request)
+        elif "delete_label" in request.POST:
+            result = edit_index(request, "/schema/stix/")
+            return result
+        elif "delete_key" in request.POST:
+            return edit_index(request, "/schema/stix/")
+            return result
+        elif "delete_index" in request.POST:
+            return edit_index(request, "/schema/stix/")
+            return result
+        elif "create_ioc" in request.POST:
+            tform = CybObjForm(request.POST)
+            if tform.is_valid():
+                print tform
+                name = tform.cleaned_data["name"]
+                index = tform.cleaned_data["index"]
+                allow_import = tform.cleaned_data["allow_import"]
+                allow_export = tform.cleaned_data["allow_export"]
+                cyb, created = CybOXObj.objects.get_or_create(
+                    name = name
+                )
+                if cyb:
+                    cyb.index = index
+                    cyb.allow_import = allow_import
+                    cyb.allow_export = allow_export
+                    cyb.save()
+        elif "delete_ioc" in request.POST:
+            tform = CybObjForm(request.POST)
+            if tform.is_valid():
+                term = tform.cleaned_data["cybobj"]
+                return redirect("/delete/stix/" + str(term.id) + "?next=/schema/stix/")
+    c = {
+        "iform":iform,
+        "tform":tform,
+        "index":NodeIndex.objects.all(),
+        "cybobj":CybOXObj.objects.all(),
+    }
+    return render(request, "schema_list.html", c)
 
 def schema_list(request):
     graph = graph_init()

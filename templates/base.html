@@ -55,12 +55,14 @@
 <li class="dropdown">
 <a class="dropdown-toggle" data-toggle="dropdown" href="#">Schema<span class="caret"></span></a>
 <ul class="dropdown-menu">
-<li><a href="/schema/graphdb/">Entity</a></li>
+<li><a href="/schema/db/">Node/Relation</a></li>
 <li><a href="/schema/openioc/">OpenIOC</a></li>
+<!--<li><a href="/schema/stix/">STIX</a></li>-->
 <li><a href="/schema/tag/">Tag</a></li>
 </ul>
 </li>
 
+<!--
 <li>
 <a href="/node/">Node</a>
 </li>
@@ -72,6 +74,7 @@
 <li>
 <a href="/db/">Local DB</a>
 </li>
+-->
 
 <li>
 <a href="/graphdb/">Graph DB</a>
@@ -98,7 +101,7 @@
 <div class="col-md-4"id="form" >
 
 <h2>Create Node/Relation</h2>
-<form method=post>{% csrf_token %}
+<form method=post >{% csrf_token %}
 <table class="table table-condensed">
 {{form.as_table}}
 </table>

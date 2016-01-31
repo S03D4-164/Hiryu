@@ -19,6 +19,8 @@ from stix.common.related import RelatedIndicator
 from stix.common import CampaignRef
 from stix.common.related import RelatedCampaignRef
 from stix.utils import set_id_namespace
+#from mixbox.idgen import IDGenerator, set_id_namespace
+#from mixbox.namespaces import Namespace
 
 appdir =  os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
@@ -158,12 +160,18 @@ def export_stix(request, model, id):
 
     NAMESPACE = {}
     url = "http://localhost"
-    NAMESPACE[url] = "localhost"
+    prefix = "localhost"
+    NAMESPACE[url] = prefix
+
+    #ns = Namespace(url, prefix, '')
+    #idgen = IDGenerator(namespace=ns)
+    #set_id_namespace(ns)
+
     #full_path = ('http', ('', 's')[request.is_secure()], '://', request.META['HTTP_HOST'], request.path)
     #url = ''.join(full_path)
     #NAMESPACE[url] = request.META['HTTP_HOST'].split(":")[0]
     set_id_namespace(NAMESPACE)
-
+    
     pkg = create_package()
 
     intent = "Indicators"
@@ -176,23 +184,27 @@ def export_stix(request, model, id):
     pkg.add_campaign(campaign)
 
     hostlist = []
-    hosts = n.filter(label__name="Host",key_property__key__name="name")
+    #hosts = n.filter(label__name="Host",key_property__key__name="name")
+    hosts = n.filter(index__label__name="Host",index__property_key__name="name")
     for host in hosts:
-        h = host.key_property.value
+        #h = host.key_property.value
+        h = host.value
         if not h in hostlist:
             hostlist.append(h)
     
     domainlist = []
-    domains = n.filter(label__name="Domain",key_property__key__name="name")
+    domains = n.filter(index__label__name="Domain",index__property_key__name="name")
     for domain in domains:
-        d = domain.key_property.value
+        #d = domain.key_property.value
+        d = domain.value
         if not d in domainlist:
             domainlist.append(d)
 
     iplist = []
-    ips = n.filter(label__name="IP",key_property__key__name="address")
+    ips = n.filter(index__label__name="IP",index__property_key__name="address")
     for ip in ips:
-        i = ip.key_property.value
+        #i = ip.key_property.value
+        i = ip.value
         if not i in iplist:
             iplist.append(i)
 

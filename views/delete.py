@@ -1,9 +1,11 @@
 from django.shortcuts import redirect, render
 from django.db.models import Q
+from django.contrib import messages 
 
 from ..models import *
 from ..forms import *
 from .graph import graph_init
+
 
 def delete_view(request, model, id=None):
     target = None
@@ -62,6 +64,8 @@ def delete_view(request, model, id=None):
         target = IOCTerm.objects.get(pk=id)
     elif model == "tag":
         target = Tag.objects.get(pk=id)
+    elif model == "reltemplate":
+        target = RelationTemplate.objects.get(pk=id)
 
     if request.method == "POST":
         if "return" in request.POST:
@@ -77,6 +81,7 @@ def delete_view(request, model, id=None):
         elif "delete" in request.POST:
             if id:
                 target.delete()
+                messages.add_message(request, messages.INFO, "Deleted: " + str(target)) 
             else:
                 if model == "cluster" or model == "db":
                     for c in Cluster.objects.all():
@@ -93,6 +98,8 @@ def delete_view(request, model, id=None):
                 if model == "db":
                     for p in Property.objects.all():
                         p.delete()
+                    for i in NodeIndex.objects.all():
+                        i.delete()
                 if model == "graphdb":
                     graph = graph_init()
                     graph.delete_all()
@@ -104,7 +111,7 @@ def delete_view(request, model, id=None):
                     next = request.GET.get("next")
                     if next:
                         return redirect(next)
-                return redirect("/schema/graphdb/")
+                return redirect("/")
     c = {
         "model":model,
         "target":target,

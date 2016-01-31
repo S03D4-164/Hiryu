@@ -23,6 +23,18 @@ $(document).ready(
                     "ajax": "{% url 'relation_data' %}",
                     "order":[0, 'desc'],
                 });
+                $('#reltemplate_table').dataTable({
+                    "processing":true,
+                    "serverSide":true,
+                    "ajax": "{% url 'reltemplate_data' %}",
+                    "order":[0, 'desc'],
+                });
+                $('#index_table').dataTable({
+                    "processing":true,
+                    "serverSide":true,
+                    "ajax": "{% url 'index_data' %}",
+                    "order":[0, 'desc'],
+                });
                 $(".entity_buttons").toggle();
                 $('.btn-toggle').click(function(e){
 			e.preventDefault();
@@ -57,11 +69,49 @@ $(document).ready(
 <h4 class="modal-title">Create Node/Relation on Local DB</h4>
 </div>
 <div class="modal-body">
-<form method=post>{% csrf_token %}
+<form method="post">{% csrf_token %}
 <table class="table table-condensed">
-{{form.as_table}}
+{{rcform.as_table}}
 </table>
 <input class="btn btn-primary btn-md" type="submit" name="create" value="Create">
+</form>
+</div><!--/.modal-body-->
+</div><!--/.modal-content-->
+</div><!--/.modal-dialog-->
+</div><!--/.modal-->
+
+<div class="modal" id="index_form" role="dialog">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+<button type="button" class="close" data-dismiss="modal">&times;</button>
+<h4 class="modal-title">Create Node Index</h4>
+</div>
+<div class="modal-body">
+<form method="post">{% csrf_token %}
+<table class="table table-condensed">
+{{iform.as_table}}
+</table>
+<input class="btn btn-primary btn-md" type="submit" name="create_index" value="Create">
+</form>
+</div><!--/.modal-body-->
+</div><!--/.modal-content-->
+</div><!--/.modal-dialog-->
+</div><!--/.modal-->
+
+<div class="modal" id="reltemplate_form" role="dialog">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+<button type="button" class="close" data-dismiss="modal">&times;</button>
+<h4 class="modal-title">Create Relation Template</h4>
+</div>
+<div class="modal-body">
+<form method="post">{% csrf_token %}
+<table class="table table-condensed">
+{{rtform.as_table}}
+</table>
+<input class="btn btn-primary btn-md" type="submit" name="create_template" value="Create">
 </form>
 </div><!--/.modal-body-->
 </div><!--/.modal-content-->
@@ -78,12 +128,22 @@ $(document).ready(
 <div class="modal-body">
 <form enctype="multipart/form-data" method=post>{% csrf_token %}
 <table >
-{{iform.as_table}}
+{{ufform.as_table}}
 </table>
 <br>
-<input class="btn btn-warning btn-md" type="submit" name="import" value="Import CSV">
+{% if model == "node" or model == "relation" %}
+<input class="btn btn-warning btn-md" type="submit" name="import" value="Import {{model}} CSV">
 <hr>
 <a class="btn btn-info btn-md" href="/export/{{model}}">Export CSV</a>
+{% else %}
+<input class="btn btn-warning btn-md" type="submit" name="import_node" value="Import Node CSV">
+<input class="btn btn-warning btn-md" type="submit" name="import_relation" value="Import Ralation CSV">
+<input class="btn btn-warning btn-md" type="submit" name="import_ioc" value="Import IOC">
+<input class="btn btn-warning btn-md" type="submit" name="import_stix" value="Import STIX">
+<hr>
+<a class="btn btn-info btn-md" href="/export/node">Export Node CSV</a>
+<a class="btn btn-info btn-md" href="/export/relation">Export Relation CSV</a>
+{% endif %}
 </form>
 </div><!--/.modal-body-->
 </div><!--/.modal-content-->
@@ -107,52 +167,75 @@ $(document).ready(
 </div><!--/.modal-dialog-->
 </div><!--/.modal-->
 
-<div id="list" class="col-md-12">
+<div id="schema" class="col-md-12">
 
+
+<div id="list" class="col-md-12">
+<h2>Nodes/Relations</h2>
 <ul class="nav nav-pills">
-{% if nodes %}
-  <li class="active"><a data-toggle="tab" href="#nodes">Nodes({{nodes|length}})</a></li>
-  {% if relations %}
-    <li><a data-toggle="tab" href="#relations">Relations({{relations|length}})</a></li>
-  {% endif %}
-{% elif relations %}
-  <li class="active"><a data-toggle="tab" href="#relations">Relations({{relations|length}})</a></li>
-{% endif %}
-  <li ><a data-toggle="modal" href="#entity_form">Create</a></li>
-{% if not model == "db" %}<li ><a data-toggle="modal" href="#import_form">Import/Export</a></li>{% endif%}
-  <li ><a data-toggle="modal" href="#push_form">Push All</a></li>
-  <li ><a class="btn btn-md" href="/delete/{{model}}">Delete All</a></li>
+<li><a class="btn btn-default">Create</a></li>
+<li><a data-toggle="modal" href="#index_form">Node Index</a></li>
+<li><a data-toggle="modal" href="#reltemplate_form">Relation Template</a></li>
+<li><a data-toggle="modal" href="#entity_form">Node/Relation</a></li>
+</ul>
+<hr>
+<ul class="nav nav-pills">
+<li class="active"><a data-toggle="tab" href="#nodes">Nodes({{nodes|length}})</a></li>
+<li ><a data-toggle="tab" href="#relations">Relations({{relations|length}})</a></li>
+<li ><a data-toggle="tab" href="#index">Index</a></li>
+<li ><a data-toggle="tab" href="#reltemplate">Template</a></li>
+<li ><a data-toggle="modal" href="#import_form">Import/Export</a></li>
+<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Graph DB<span class="caret"></span></a>
+<ul class="dropdown-menu">
+<li ><a data-toggle="modal" href="#push_form">Push All</a></li>
+<li ><a href="/delete/{{model}}">Delete All</a></li>
+</ul></li>
 </ul>
 
 <div class="tab-content">
 
-{% if nodes %}
 <div class="tab-pane active" id="nodes">
-<table id="node_table" class="table table-condensed table-hover table-striped ">
+<table id="node_table" class="table table-hover table-striped display" width="100%">
 <thead><tr>
-<th class="col-sm-2">ID/Ref</th>
-<th class="col-sm-2">Label</th>
-<th class="col-sm-1">Key</th>
-<th class="col-sm-3">Value</th>
+<th class="col-sm-1">ID</th>
+<th class="col-sm-1">Ref</th>
+<th class="col-sm-2">Created</th>
+<th class="col-sm-2">Index</th>
+<th class="col-sm-2">Value</th>
 <th class="col-sm-4">SubCluster/Cluster</th>
 </tr></thead>
 </table>
 </div><!--/nodes-->
-{% endif %}
 
-{% if relations %}
+<div class="tab-pane" id="index">
+<table id="index_table" class="table table-hover table-striped display" width="100%">
+<thead><tr>
+<th class="col-sm-1">ID</th>
+<th class="col-sm-1">Icon</th>
+<th class="col-sm-5">Label</th>
+<th class="col-sm-5">Key</th>
+</tr></thead>
+</table>
+</div>
 
-{% if not nodes %}
-<div class="tab-pane active" id="relations" >
-{% else %}
+<div class="tab-pane" id="reltemplate">
+<table id="reltemplate_table" class="table table-condensed table-hover table-striped display" width="100%">
+<thead><tr>
+<th class="col-sm-1">ID</th>
+<th class="col-sm-4">Src</th>
+<th class="col-sm-3">Rel</th>
+<th class="col-sm-4">Dst</th>
+</tr></thead>
+</table>
+</div>
+
+
 <div class="tab-pane" id="relations" >
-{% endif %}
-
 <table id="relation_table" class="table table-condensed table-hover table-striped display" width="100%">
-
 <thead>
 <tr>
-<th class="col-md-2">ID/Ref</th>
+<th class="col-md-1">ID</th>
+<th class="col-md-1">Ref</th>
 <th class="col-md-2">Firstseen</th>
 <th class="col-md-0.5"></th>
 <th class="col-md-3">Src</th>
@@ -164,7 +247,6 @@ $(document).ready(
 </table>
 
 </div><!--/relations-->
-{% endif %}
 
 </div><!--/tab-content-->
 

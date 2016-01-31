@@ -6,6 +6,8 @@ from ..forms import *
 from ..models import *
 from .graph import graph_init
 #from .csv_import import import_node, import_relation
+
+import datetime
 from multiprocessing import Process, Queue
 
 def set_properties_to_node(node, properties):
@@ -66,9 +68,14 @@ def get_node_on_db(label, key, value, properties = {}):
             if pr:
                 node, created = Node.objects.get_or_create(
                     index=ni,
-                    label=nl,
-                    key_property = pr, 
+                    value = value
+                    #label=nl,
+                    #key_property = pr, 
                 )
+                if node and created:
+                    node.firstseen = datetime.datetime.now()
+                    node.lastseen = datetime.datetime.now()
+                    node.save()
                 if not pr in node.properties.all():
                     node.properties.add(pr)
                     node.save()
@@ -77,9 +84,12 @@ def get_node_on_db(label, key, value, properties = {}):
     return node
 
 def get_node_on_graph(node, graph):
-    label = node.label.name
-    key = node.key_property.key.name
-    value = node.key_property.value
+    #label = node.label.name
+    label = node.index.label.name
+    #key = node.key_property.key.name
+    key = node.index.property_key.name
+    #value = node.key_property.value
+    value = node.value
     properties = {}
     for p in node.properties.all():
         properties[p.key.name] = p.value
@@ -127,14 +137,18 @@ def relform_to_localdb(relform, graph):
     rel = None
     if src_node and dst_node and reltype:
         rel, created = Relation.objects.get_or_create(
-           type = reltype,
-          src = src_node,
-          dst = dst_node,
-       )
+            type = reltype,
+            src = src_node,
+            dst = dst_node,
+        )
+        if rel and created:
+            rel.firstseen = datetime.datetime.now()
+            rel.lastseen = datetime.datetime.now()
+            rel.save()
     return src_node, dst_node, rel
 
 def get_relation_on_graph(relation, graph):
-    rel = relation.type.name
+    rel = relation.type.name.encode("utf-8")
     src_node = get_node_on_graph(relation.src, graph)
     dst_node = get_node_on_graph(relation.dst, graph)
     r = None
