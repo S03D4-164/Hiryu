@@ -34,6 +34,8 @@ def set_properties_to_node(node, properties):
                 sc, created = SubCluster.objects.get_or_create(name=v)
                 if sc and not sc in subcluster:
                     subcluster.append(sc)
+        elif k =="created" and v:
+            node.created = v
         elif k and v:
             pk, created = PropertyKey.objects.get_or_create(name=k)
             if pk:
@@ -72,10 +74,10 @@ def get_node_on_db(label, key, value, properties = {}):
                     #label=nl,
                     #key_property = pr, 
                 )
-                if node and created:
-                    node.firstseen = datetime.datetime.now()
-                    node.lastseen = datetime.datetime.now()
-                    node.save()
+                #if node and created:
+                #    node.firstseen = datetime.datetime.now()
+                #    node.lastseen = datetime.datetime.now()
+                #    node.save()
                 if not pr in node.properties.all():
                     node.properties.add(pr)
                     node.save()
@@ -107,6 +109,8 @@ def get_node_on_graph(node, graph):
     properties["cluster"] = None
     if c:
         properties["cluster"] = c
+    if node.created:
+        properties["created"] = node.created
     from graphdb import get_node
     n = get_node(graph, label, key, value, properties)
     if n:
@@ -175,6 +179,11 @@ def get_relation_on_graph(relation, graph):
                         cluster.append(c.name)
             if cluster:
                 properties["cluster"] = cluster
+            if relation.firstseen:
+                properties["firstseen"] = relation.firstseen
+            if relation.lastseen:
+                properties["lastseen"] = relation.lastseen
+                
             for key in properties:
                 r[key] = properties[key]
             r.push()

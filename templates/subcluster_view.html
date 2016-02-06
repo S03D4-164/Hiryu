@@ -126,35 +126,54 @@ $(document).ready(
 </div><!--/.modal-dialog-->
 </div><!--/.modal-->
 
-<div class="col-md-6" id="form" >
+<div class="col-md-12" id="subcluster" >
 
 <div class="panel panel-primary">
 <div class="panel-heading">
-<a data-toggle="collapse" data-parent="#accordion" href="#collapse1" style="color:white">
+<a data-toggle="collapse" href="#collapse1" style="color:white">
 {{model|capfirst}}
 </a>
-</div>
+<a class="btn btn-default btn-xs" data-toggle="modal" href="#subcluster_form">Edit</a>
+</div><!--.panel-heading-->
 <div id="collapse1" class="panel-collapse collapse in">
 <div class="panel-body">
+<div class="row">
+<div class="col-md-6">
 <table class="table table-condensed">
-<tr><th class="col-md-3">ID</th><td><a class="btn btn-primary btn-sm" href="/{{model}}/{{cluster.id}}">{{cluster.id}}</a></td></tr>
+<tr><th class="col-md-3">ID</th><td><a class="btn btn-primary btn-sm" href="">{{cluster.id}}</a></td></tr>
 <tr><th>Name</th><td>{{cluster.name}}</td></tr>
 <tr><th>First seen</th><td>{{cluster.firstseen}}</td></tr>
-<tr><th>Description</th><td>{{cluster.description}}</td></tr>
+<tr><th>Tag</th>
+<td>
+{% for t in cluster.tag.all %}
+{{t}}<br>
+{% endfor %}
+</td></tr>
 </table>
-<a class="btn btn-primary" data-toggle="modal" href="#subcluster_form">Edit</a>
 <!--
 <a class="btn btn-info" data-toggle="modal" href="#rel_form">Create Node/Relation</a>
 <a class="btn btn-info" data-toggle="modal" href="#template_form">Create Node/Relation</a>
 -->
+</div>
+<div class="col-md-6">
+<table class="table table-condensed">
+<tr><th class="col-md-3">Description</th><td><pre>{{cluster.description}}</pre></td></tr>
+</table>
 </div><!--/.panel-body-->
+</div><!--/collapse-->
+</div><!--.panel-->
 </div>
 
-<div class="panel-heading">
-<a data-toggle="collapse" data-parent="#accordion" href="#collapse3" style="color:white">
-Create Node/Relation
-</a>
 </div>
+
+</div><!--.subcluster-->
+
+<div class="col-md-6" id="accordion" >
+<div class="panel panel-default">
+<div class="panel-heading">
+<a data-toggle="collapse" data-parent="#accordion" href="#collapse3" >
+Create Node/Relation
+</a></div><!--.panel-heading-->
 <div id="collapse3" class="panel-collapse collapse">
 <div class="panel-body">
 <form method=post>{% csrf_token %}
@@ -164,10 +183,10 @@ Create Node/Relation
 <input class="btn btn-primary btn-md" type="submit" name="create" value="Create">
 </form>
 </div><!--/.panel-body-->
-</div>
+</div><!--.collapse-->
 
 <div class="panel-heading">
-<a data-toggle="collapse" data-parent="#accordion" href="#collapse2" style="color:white">
+<a data-toggle="collapse" data-parent="#accordion" href="#collapse2" >
 Use Template
 </a>
 </div>
@@ -181,12 +200,19 @@ Use Template
 </form>
 </div><!--/.panel-body-->
 </div>
-
 </div><!--/.panel-->
-
 </div>
 
+
 <div class="col-md-6">
+<div class="btn-group">
+<a class="btn btn-info" data-toggle="collapse" href="#network">Visualize</a>
+<a class="btn btn-primary" href="?vis=1">Show</a>
+<a class="btn btn-primary" href="?vis=2">Anonymize</a>
+<a class="btn btn-primary" href="?vis=0">Hide</a>
+<a class="btn btn-primary" href="/visualize/subcluster/{{cluster.id}}">Large View</a>
+<a class="btn btn-primary" href="/vis_anonymize/subcluster/{{cluster.id}}">Large View(Anonymized)</a>
+</div>
 {% if dataset %}
 <div style="margin: 0 auto;" id="network" ></div>
 <script type="text/javascript">
@@ -218,7 +244,7 @@ var network = new vis.Network(container, data, options);
 {% endif %}
 </div>
 
-
+</div>
 
 <div id="list" class="col-md-12">
 
@@ -226,6 +252,7 @@ var network = new vis.Network(container, data, options);
   <li class="active"><a data-toggle="tab" href="#node">Node({{nodes|length}})</a></li>
   <li ><a data-toggle="tab" href="#relation">Relation({{relations|length}})</a></li>
   <li ><a data-toggle="tab" href="#cluster">Cluster({{cluster.cluster.all|length}})</a></li>
+<!--
   <li class="dropdown">
     <a class="dropdown-toggle" data-toggle="dropdown" href="#">Visualize<span class="caret"></a>
     <ul class="dropdown-menu">
@@ -236,6 +263,7 @@ var network = new vis.Network(container, data, options);
         <li ><a href="/vis_anonymize/subcluster/{{cluster.id}}">Large View(Anonymized)</a>
     </ul>
   </li>
+-->
   <li class="dropdown">
     <a class="dropdown-toggle" data-toggle="dropdown" href="#">Export<span class="caret"></a>
     <ul class="dropdown-menu">

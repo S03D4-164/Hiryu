@@ -48,8 +48,8 @@ $(document).ready(
 
 {% if tform %}
 <div class="panel panel-primary">
-{% if iocterm %}<div class="panel-heading">IOC Term</div>
-{% elif cybobj %}
+{% if model == "openioc" %}<div class="panel-heading">IOC Term</div>
+{% elif model == "cybox" %}
 <div class="panel-heading">Cybox Object</div>
 {% endif %}
 <div class="panel-body">

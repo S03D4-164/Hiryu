@@ -71,17 +71,21 @@ $(document).ready(
 
 <div class="panel panel-primary">
 
-<div class="panel-heading">{{model|capfirst}}</div>
+<div class="panel-heading">
+{{model|capfirst}}
+<a class="btn btn-default btn-xs" data-toggle="modal" href="#rel_form">Edit</a></li>
+</div>
 <div class="panel-body">
 
 <table class="table table-condensed"><tbody>
-<tr><th class="col-md-3">ID</th><td><a class="btn btn-primary btn-sm" href="/{{model}}/{{rel.id}}">{{rel.id}}</a></td></tr>
+<tr><th class="col-md-3">ID</th><td><a class="btn btn-primary btn-sm" href="">{{rel.id}}</a></td></tr>
 <tr><th>Src Node</th><td><a href="/node/{{rel.src.id}}">{{rel.src.value}}</a></td></tr>
 <tr><th>Type</th><td>{{rel.type.name}}</td></tr>
 <tr><th>Dst Node</th><td><a href="/node/{{rel.dst.id}}">{{rel.dst.value}}</a></td></tr>
+<tr><th>firstseen</th><td>{{rel.firstseen}}</td></tr>
+<tr><th>lastseen</th><td>{{rel.lastseen}}</td></tr>
 </tbody></table>
 
-<a class="btn btn-default" data-toggle="modal" href="#rel_form">Edit</a></li>
 
 </div><!--/.panel-body-->
 

@@ -57,5 +57,6 @@ urlpatterns = [
     url(r'^relation/(?P<id>\d+)$', relation_view),
     url(r'^relation/data$', RelationData.as_view(), name='relation_data'),
     url(r'^reltemplate/data$', RelTemplateData.as_view(), name='reltemplate_data'),
-    url(r'^ref/(?P<id>\d+)$', ref_view),
+    #url(r'^ref/(?P<id>\d+)$', ref_view),
+    url(r'^ref/(?P<model>\w+)/(?P<id>\d+)$', ref_view),
 ]

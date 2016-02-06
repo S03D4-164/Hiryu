@@ -26,6 +26,8 @@ def create_subcluster(form):
             s.firstseen = firstseen
         if cluster:
             s.cluster = cluster
+        s.tag.clear()
+        s.tag = tag
         s.save()
     return s
 

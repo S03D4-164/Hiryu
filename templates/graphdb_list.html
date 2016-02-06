@@ -37,12 +37,19 @@ $(document).ready(
 
 {% block container %}
 
-<div class="col-md-4" id="form" >
+<div class="col-md-12">
+<h3><a data-toggle="collapse" href="#form">Graph DB</a></h3>
+<div class="collapse in" id="form">
+
+<div class="col-md-6">
 
 <div class="panel panel-info">
 
-<div class="panel-heading">Create Node/Relation on Graph DB</div>
-
+<div class="panel-heading">
+<a data-toggle="collapse" href="#collapse1">
+Create Node/Relation on Graph DB
+</a></div>
+<div id="collapse1" class="panel-collapse collapse ">
 <div class="panel-body">
 <form method=post>{% csrf_token %}
 <table class="table table-condensed">
@@ -50,20 +57,29 @@ $(document).ready(
 {{form.as_table}}
 </table>
 <input class="btn btn-primary btn-md" type="submit" name="create" value="Create">
-<br><br>
-<input class="btn btn-info btn-sm" type="submit" name="create_index" value="Create Index on Graph DB">
-<input class="btn btn-warning btn-sm" type="submit" name="delete_index" value="Delete Index on Graph DB">
+<input class="btn btn-info" type="submit" name="create_index" value="Create Index on Graph DB">
+<input class="btn btn-warning" type="submit" name="delete_index" value="Delete Index on Graph DB">
+<br>
+<br>
+<input class="btn btn-info" type="submit" name="create_all_index" value="Create All Index on Graph DB">
+<input class="btn btn-danger" type="submit" name="delete_all_index" value="Delete All Index on Graph DB">
 </form>
+</div>
 </div>
 
 </div><!--/panel-->
 
+</div>
+
+<div class="col-md-6">
+
 <div class="panel panel-info">
 
 <div class="panel-heading">
+<a data-toggle="collapse" href="#collapse2">
 Manipulate Entity
-</div>
-
+</a></div>
+<div id="collapse2" class="panel-collapse collapse">
 <div class="panel-body">
 <form method=post>{% csrf_token %}
 <table class="table table-condensed">
@@ -73,24 +89,25 @@ Manipulate Entity
 <input class="btn btn-info btn-md" type="submit" name="add_property" value="Add Property">
 <input class="btn btn-warning btn-md" type="submit" name="remove_property" value="Remove Property">
 <br><br>
-<input class="btn btn-info btn-md" type="submit" name="push" value="Push to DB">
-<input class="btn btn-danger btn-md" type="submit" name="delete" value="Delete from Graph">
-<br><br>
-<input class="btn btn-info btn-md" type="submit" name="push_all" value="Push All">
-<input class="btn btn-danger btn-md" type="submit" name="delete_all" value="Delete All">
+<input class="btn btn-info btn-md" type="submit" name="push" value="Push to Local DB">
+<input class="btn btn-danger btn-md" type="submit" name="delete" value="Delete from Graph DB">
+<input class="btn btn-info btn-md" type="submit" name="push_all" value="Push All to Local DB">
 </form>
 </div><!--/.panel-body-->
 
 </div><!--/.panel-->
-
+</div>
 </div><!--/col-md-4-->
-
-<div id="list" class="col-md-8">
+</div>
+</div>
+<div id="list" class="col-md-12">
+<hr>
 
 <ul class="nav nav-pills">
   <li class="active"><a data-toggle="tab" href="#nodes">Nodes({{nodes|length}})</a></li>
   <li><a data-toggle="tab" href="#relations">Relations({{relations|length}})</a></li>
   <li><a data-toggle="tab" href="#indexes">Indexes({{indexes|length}})</a></li>
+  <li><a href="/delete/graphdb">Delete All</a></li>
 </ul>
 
 <div class="tab-content">
@@ -101,10 +118,10 @@ Manipulate Entity
 
 <thead>
 <tr>
-<th class="col-sm-1">Ref</th>
-<th class="col-sm-2">Labels</th>
-<th class="col-sm-4">Properties</th>
-<th class="col-sm-1">Degree</th>
+<th class="col-md-1">Ref</th>
+<th class="col-md-4">Labels</th>
+<th class="col-md-6">Properties</th>
+<th class="col-md-1">Degree</th>
 </tr>
 </thead>
 
@@ -113,8 +130,8 @@ Manipulate Entity
 {% for n in nodes %}
 <tr>
 <td>
-<a class="btn btn-default btn-xs node_ref" value="{{n.ref}}"><span class="glyphicon glyphicon-chevron-left"></span></a>
-<a class="btn btn-info btn-sm" href="/ref/{{n.ref}}">{{n.ref}}</a>
+<a class="btn btn-default btn-xs node_ref" value="{{n.ref}}"><span class="glyphicon glyphicon-chevron-up"></span></a>
+<a class="btn btn-info btn-sm" href="/ref/node/{{n.ref}}">{{n.ref}}</a>
 </td>
 <td><table class="table table-condensed">
 {% for l in n.labels %}
@@ -153,9 +170,9 @@ Manipulate Entity
 
 <thead>
 <tr>
-<th class="col-sm-3">Source Node</th>
-<th class="col-sm-2">Relation</th>
-<th class="col-sm-3">Destination Node</th>
+<th class="col-sm-4">Source Node</th>
+<th class="col-sm-4">Relation</th>
+<th class="col-sm-4">Destination Node</th>
 </tr>
 </thead>
 
@@ -164,10 +181,10 @@ Manipulate Entity
 <tr>
 
 <td><table class="table table-condensed">
-<tr><th>ref</th>
+<tr><th class="col-md-3">ref</th>
 <td>
-<a class="btn btn-default btn-xs node_ref" value="{{r.src.ref}}"><span class="glyphicon glyphicon-chevron-left"></span></a>
-<a class="btn btn-info btn-sm" href="/ref/{{r.src.ref}}">{{r.src.ref}}</a>
+<a class="btn btn-default btn-xs node_ref" value="{{r.src.ref}}"><span class="glyphicon glyphicon-chevron-up"></span></a>
+<a class="btn btn-info btn-sm" href="/ref/node/{{r.src.ref}}">{{r.src.ref}}</a>
 </td>
 <tr>
 <th>label</th>
@@ -193,10 +210,10 @@ Manipulate Entity
 </table></td>
 
 <td><table class="table table-condensed">
-<tr><th>ref</th>
+<tr><th class="col-md-3">ref</th>
 <td>
-<a class="btn btn-default btn-xs rel_ref" value="{{r.rel.ref}}"><span class="glyphicon glyphicon-chevron-left"></span></a>
-<a class="btn btn-info btn-sm" href="/ref/{{r.rel.ref}}">{{r.rel.ref}}</a>
+<a class="btn btn-default btn-xs rel_ref" value="{{r.rel.ref}}"><span class="glyphicon glyphicon-chevron-up"></span></a>
+<a class="btn btn-info btn-sm" href="/ref/relation/{{r.rel.ref}}">{{r.rel.ref}}</a>
 </td>
 <tr><th>type</th><td>{{r.rel.type}}</td></tr>
 {% for k,v in r.rel.properties.items %}
@@ -215,10 +232,10 @@ Manipulate Entity
 </table></td>
 
 <td><table class="table table-condensed">
-<tr><th>ref</th>
+<tr><th class="col-md-3">ref</th>
 <td>
-<a class="btn btn-default btn-xs node_ref" value="{{r.dst.ref}}"><span class="glyphicon glyphicon-chevron-left"></span></a>
-<a class="btn btn-info btn-sm" href="/ref/{{r.dst.ref}}">{{r.dst.ref}}</a>
+<a class="btn btn-default btn-xs node_ref" value="{{r.dst.ref}}"><span class="glyphicon glyphicon-chevron-up"></span></a>
+<a class="btn btn-info btn-sm" href="/ref/node/{{r.dst.ref}}">{{r.dst.ref}}</a>
 </td>
 <tr>
 <th>label</th>

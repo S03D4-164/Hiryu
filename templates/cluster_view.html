@@ -117,6 +117,7 @@ $(document).ready(
 
 <div class="col-md-12">
 
+<div id="accordion">
 <div class="panel panel-primary">
 
 <div class="panel-heading">
@@ -133,9 +134,15 @@ $(document).ready(
 <tr><th>Created</th><td>{{cluster.created}}</td></tr>
 <tr><th>Modified</th><td>{{cluster.modified}}</td></tr>
 <tr><th>First seen</th><td>{{cluster.firstseen}}</td></tr>
+<tr><th>Tag</th>
+<td>
+{% for t in cluster.tag.all %}
+{{t}}<br>
+{% endfor %}
+</td></tr>
 </table>
-<a class="btn btn-primary" data-toggle="modal" href="#cluster_form">Edit</a>
-<a class="btn btn-info" data-toggle="modal" href="#import_form">Import/Export</a>
+<a class="btn btn-info" data-toggle="modal" href="#cluster_form">Edit</a>
+<a class="btn btn-warning" data-toggle="modal" href="#import_form">Import/Export</a>
 <a class="btn btn-default btn-md " href="/visualize/cluster/{{cluster.id}}">Visualize</a>
 <a class="btn btn-default btn-md " href="/vis_anonymize/cluster/{{cluster.id}}">Visualize(mask)</a>
 </div>
@@ -145,16 +152,11 @@ $(document).ready(
 <tr><td><pre>{{cluster.description}}</pre></td></tr>
 </table>
 </div>
-
-
 </div><!--/.panel-body-->
 </div>
-</div><!--/.panel-->
-
-<div class="panel panel-info">
 
 <div class="panel-heading">
-<a data-toggle="collapse" data-parent="#accordion" href="#collapse2" >
+<a data-toggle="collapse" data-parent="#accordion" href="#collapse2" style="color:white">
 Create SubCluster
 </a>
 </div>
@@ -170,10 +172,7 @@ Create SubCluster
 </div><!--/.panel-body-->
 </div>
 </div><!--/.panel-->
-
-<div class="panel panel-default">
-
-</div><!--/.col-md-4-->
+</div>
 
 <div id="list" class="col-md-12">
 

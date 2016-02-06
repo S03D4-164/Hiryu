@@ -118,6 +118,7 @@ def export_node(request, model=None, id=None):
         "primary_value",
         "property_key",
         "property_value",
+        "created",
         "subcluster",
         "cluster",
     )
@@ -136,9 +137,11 @@ def export_node(request, model=None, id=None):
             "primary_value":n.value.encode("utf8"),
             "property_key":None,
             "property_value":None,
+            "created":n.created,
             "subcluster":None,
             "cluster":None,
         }
+        print dict
         write_entity_to_csv(cluster, subcluster, n, dict, writer)
     return redirect(out)
 
@@ -167,9 +170,14 @@ def write_entity_to_csv(cluster, subcluster, e, dict, writer):
                 if e.subcluster.all():
                     for s in e.subcluster.all():
                         dict["subcluster"] = s.name.encode("utf8")
-                        for c in s.cluster.all():
-                            dict["cluster"] = c.name.encode("utf8")
+                        if s.cluster.all():
+                            for c in s.cluster.all():
+                                dict["cluster"] = c.name.encode("utf8")
+                                writer.writerow(dict)
+                        else:
                             writer.writerow(dict)
+                else:
+                    writer.writerow(dict)
                 
     else:
         if subcluster:
@@ -192,9 +200,14 @@ def write_entity_to_csv(cluster, subcluster, e, dict, writer):
             if e.subcluster.all():
                 for s in e.subcluster.all():
                     dict["subcluster"] = s.name.encode("utf8")
-                    for c in s.cluster.all():
-                        dict["cluster"] = c.name.encode("utf8")
+                    if s.cluster.all():
+                        for c in s.cluster.all():
+                            dict["cluster"] = c.name.encode("utf8")
+                            writer.writerow(dict)
+                    else:
                         writer.writerow(dict)
+            else:
+                writer.writerow(dict)
 
 def export_relation(request, model=None, id=None):
     node = None
@@ -213,6 +226,8 @@ def export_relation(request, model=None, id=None):
         "src_key",
         "src_value",
         "rel_type",
+        "firstseen",
+        "lastseen",
         "property_key",
         "property_value",
         "dst_label",
@@ -234,6 +249,8 @@ def export_relation(request, model=None, id=None):
             "src_key":r.src.index.property_key.name.encode("utf8"),
             "src_value":r.src.value.encode("utf8"),
             "rel_type":r.type.name.encode("utf8"),
+            "firstseen":r.firstseen,
+            "lastseen":r.lastseen,
             "property_key":None,
             "property_value":None,
             "dst_label":r.dst.index.label.name.encode("utf8"),
@@ -242,5 +259,6 @@ def export_relation(request, model=None, id=None):
             "subcluster":None,
             "cluster":None,
         }
+        print dict
         write_entity_to_csv(cluster, subcluster, r, dict, writer)
     return redirect(out)

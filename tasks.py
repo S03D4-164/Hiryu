@@ -89,6 +89,10 @@ def push_relation_to_db(relation, graph):
                        sc, created = SubCluster.objects.get_or_create(name=v)
                        if sc and not sc in subcluster:
                           subcluster.append(sc)
+                elif k =="firstseen":
+                    rel.firstseen = v
+                elif k =="lastseen":
+                    rel.lastseen = v
                 else:
                     pk, created = PropertyKey.objects.get_or_create(name=k)
                     p, created = Property.objects.get_or_create(key=pk, value=v)
@@ -122,13 +126,13 @@ def push_db_to_graph(entity):
     if not entity or entity == "node":
         nodes = Node.objects.all()
     for node in nodes:
-       get_node_on_graph(node, graph)
+        get_node_on_graph(node, graph)
 
     relations = None
     if not entity == "relation":
         relations = Relation.objects.all()
     for relation in relations:
-       get_relation_on_graph(relation, graph)
+        get_relation_on_graph(relation, graph)
 
 #if __name__ == '__main__': 
 #    app.start()   

@@ -1,3 +1,5 @@
+from ..celery import app
+
 from django.shortcuts import redirect
 from ..models import *
 from ..forms import UploadFileForm
@@ -137,7 +139,7 @@ def import_subcluster(files):
 
     return redirect("/cluster/")
 
-
+@app.task
 def import_node(files):
     fieldnames = (
         "node_label",
@@ -145,6 +147,7 @@ def import_node(files):
         "primary_value",
         "property_key",
         "property_value",
+        "created",
         "subcluster",
         "cluster",
     )
@@ -157,18 +160,24 @@ def import_node(files):
             r["primary_value"],
         )
         if node:
+            if r["created"]:
+                node.created = r["created"]
+                node.save()
             if r["property_key"] and r["property_value"]:
                 node = set_property_to_entity(node, r["property_key"], r["property_value"])
             if r["subcluster"]:
                 node = set_subcluster_to_entity(node, r["subcluster"], r["cluster"])
     return redirect("/node/")
 
+@app.task
 def import_relation(files):
     fieldnames = (
         "src_label",
         "src_key",
         "src_value",
         "rel_type",
+        "firstseen",
+        "lastseen",
         "property_key",
         "property_value",
         "dst_label",
@@ -201,6 +210,12 @@ def import_relation(files):
                     dst = dst,
                 )
                 if rel:
+                    if r["firstseen"]:
+                        rel.firstseen = r["firstseen"]
+                        rel.save()
+                    if r["lastseen"]:
+                        rel.lastseen = r["lastseen"]
+                        rel.save()
                     if r["property_key"] and r["property_value"]:
                         rel = set_property_to_entity(rel, r["property_key"], r["property_value"])
                     if r["subcluster"]:

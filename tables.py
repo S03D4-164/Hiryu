@@ -132,8 +132,8 @@ class NodeData(BaseDatatableView):
                     td += "</tr>"
             td += "</table>"
             return '{0}'.format(td)
-        elif column == 'label':
-            return '{0}'.format(row.label.name.encode("utf-8"))
+        #elif column == 'label':
+        #    return '{0}'.format(row.label.name.encode("utf-8"))
         elif column == 'index':
             return '{0}'.format(row.index)
         else:
@@ -143,9 +143,10 @@ class NodeData(BaseDatatableView):
         search = self.request.GET.get(u'search[value]', None)
         if search:
             qs = qs.filter(id__iregex=search) \
-                | qs.filter(label__name__iregex=search) \
-                | qs.filter(key_property__key__name__iregex=search) \
-                | qs.filter(key_property__value__iregex=search) \
+                | qs.filter(index__label__name__iregex=search) \
+                | qs.filter(index__property_key__name__iregex=search) \
+                | qs.filter(value__iregex=search) \
+                | qs.filter(created__iregex=search) \
                 | qs.filter(subcluster__name__iregex=search) \
                 | qs.filter(subcluster__cluster__name__iregex=search)
         return qs.distinct()
@@ -219,11 +220,12 @@ class RelationData(BaseDatatableView):
             qs = qs.filter(id__iregex=search) \
                 | qs.filter(type__name__iregex=search) \
                 | qs.filter(src__index__label__name__iregex=search) \
-                | qs.filter(src__index__property__key__name__iregex=search) \
+                | qs.filter(src__index__property_key__name__iregex=search) \
                 | qs.filter(src__value__iregex=search) \
                 | qs.filter(dst__index__label__name__iregex=search) \
-                | qs.filter(dst__index_property__key__name__iregex=search) \
+                | qs.filter(dst__index__property_key__name__iregex=search) \
                 | qs.filter(dst__value__iregex=search) \
+                | qs.filter(firstseen__iregex=search) \
                 | qs.filter(subcluster__name__iregex=search) \
                 | qs.filter(subcluster__cluster__name__iregex=search)
         return qs.distinct()

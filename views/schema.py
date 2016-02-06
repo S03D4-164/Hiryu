@@ -156,6 +156,7 @@ def ioc_schema_list(request):
         "tform":tform,
         "index":NodeIndex.objects.all(),
         "iocterm":IOCTerm.objects.all(),
+        "model":"openioc",
     }
     return render(request, "schema_list.html", c)
 
@@ -200,6 +201,7 @@ def stix_schema_list(request):
         "tform":tform,
         "index":NodeIndex.objects.all(),
         "cybobj":CybOXObj.objects.all(),
+        "model":"cybox",
     }
     return render(request, "schema_list.html", c)
 

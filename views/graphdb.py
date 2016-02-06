@@ -47,9 +47,10 @@ def graphdb_view(request):
                 }
                 dst_node = get_node(graph, dst["label"], dst["key"], dst["value"])
                 reltype = form.cleaned_data["reltype"]
-                rel = reltype.name
-                if src_node and dst_node and rel:
-                    graph.create_unique(Relationship(src_node, rel, dst_node ))
+                if reltype:
+                    rel = reltype.name
+                    if src_node and dst_node and rel:
+                        graph.create_unique(Relationship(src_node, rel, dst_node ))
         elif "create_index" in request.POST:
             form = RelCreateForm(request.POST)
             if form.is_valid():
@@ -58,12 +59,32 @@ def graphdb_view(request):
                 key = src_index.property_key.name
                 if not key in graph.schema.get_uniqueness_constraints(label):
                     graph.schema.create_uniqueness_constraint(label, key)
+        elif "create_all_index" in request.POST:
+            #form = RelCreateForm(request.POST)
+            #if form.is_valid():
+            #    src_index = form.cleaned_data["src_index"]
+            index = NodeIndex.objects.all()
+            for i in index:
+                label = i.label.name
+                key = i.property_key.name
+                if not key in graph.schema.get_uniqueness_constraints(label):
+                    graph.schema.create_uniqueness_constraint(label, key)
         elif "delete_index" in request.POST:
             form = RelCreateForm(request.POST)
             if form.is_valid():
                 src_index = form.cleaned_data["src_index"]
                 label = src_index.label.name
                 key = src_index.property_key.name
+                for key in graph.schema.get_uniqueness_constraints(label):
+                    graph.schema.drop_uniqueness_constraint(label, key)
+        elif "delete_all_index" in request.POST:
+            #form = RelCreateForm(request.POST)
+            #if form.is_valid():
+            #    src_index = form.cleaned_data["src_index"]
+            index = NodeIndex.objects.all()
+            for i in index:
+                label = i.label.name
+                key = i.property_key.name
                 for key in graph.schema.get_uniqueness_constraints(label):
                     graph.schema.drop_uniqueness_constraint(label, key)
         elif "add_property" in request.POST:

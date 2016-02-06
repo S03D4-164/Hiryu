@@ -15,7 +15,8 @@ class Property(models.Model):
     key = models.ForeignKey(PropertyKey)
     value = models.CharField(max_length=2000)
     def __str__(self):
-        return str(self.key.name + " - " + self.value.encode("utf-8"))
+        p = self.key.name + u" - " + self.value
+        return p.encode("utf-8")
     class Meta:
         unique_together = (("key", "value"),)
         ordering = ["key", "value"]
@@ -24,7 +25,8 @@ class Tag(models.Model):
     key = models.ForeignKey(PropertyKey)
     value = models.CharField(max_length=2000)
     def __str__(self):
-        return str(self.key.name + " - " + self.value.encode("utf-8"))
+        t = self.key.name + u" - " + self.value
+        return t.encode("utf-8")
     class Meta:
         unique_together = (("key", "value"),)
         ordering = ["key", "value"]
@@ -84,9 +86,11 @@ class NodeIndex(models.Model):
         #return str(self.label.name + " " + self.property_key.name)
         #return str(self.label.name.encode("utf-8") + " " + self.property_key.name.encode("utf-8"))
         
-        l = self.label.name.encode("utf-8")
-        k = self.property_key.name.encode("utf-8")
-        return str(l) + str(" ") + str(k)
+        #l = self.label.name.encode("utf-8")
+        #k = self.property_key.name.encode("utf-8")
+        #return str(l) + str(" ") + str(k)
+        i = self.label.name + u" " + self.property_key.name
+        return i.encode("utf-8")
     class Meta:
         unique_together = (("label", "property_key"),)
 
@@ -122,7 +126,9 @@ class Node(models.Model):
     #class Meta:
     #    unique_together = (("label", "key_property"),)
     def __str__(self):
-        return str(self.index) + str(" - ") + self.value.encode("utf-8")
+        n =  self.index + u" - " + self.value
+        return n.encode("utf-8")
+        #return str(self.index) + str(" - ") + self.value.encode("utf-8")
     class Meta:
         unique_together = (("index", "value"),)
 

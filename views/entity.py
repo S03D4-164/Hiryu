@@ -303,11 +303,11 @@ def db_view(request, entity=None):
         elif "import_node" in request.POST:
             ufform = UploadFileForm(request.POST, request.FILES)
             if ufform.is_valid():
-                import_node(request.FILES['file'])
+                import_node.delay(request.FILES['file'])
         elif "import_relation" in request.POST:
             ufform = UploadFileForm(request.POST, request.FILES)
             if ufform.is_valid():
-                import_relation(request.FILES['file'])
+                import_relation.delay(request.FILES['file'])
         elif "push" in request.POST:
             esform = EntitySelectForm(request.POST)
             if esform.is_valid():
