@@ -265,7 +265,7 @@ def db_list(request):
                     "cluster":sc["cluster"],
                     "node":sc["node"],
                 }
-                return render(request, "import_view.html", context)
+                return render(request, "import_stix.html", context)
             else:
                 messages.add_message(request, messages.WARNING, "Import failed: Invalid file.")
 

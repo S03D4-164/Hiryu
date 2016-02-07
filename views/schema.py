@@ -134,13 +134,10 @@ def ioc_schema_list(request):
         elif "create_ioc" in request.POST:
             tform = IOCTermForm(request.POST)
             if tform.is_valid():
-                text = tform.cleaned_data["text"]
+                ioc = tform.cleaned_data["iocterm"]
                 index = tform.cleaned_data["index"]
                 allow_import = tform.cleaned_data["allow_import"]
                 allow_export = tform.cleaned_data["allow_export"]
-                ioc, created = IOCTerm.objects.get_or_create(
-                    text = text
-                )
                 if ioc:
                     ioc.index = index
                     ioc.allow_import = allow_import

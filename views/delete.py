@@ -101,8 +101,8 @@ def delete_view(request, model, id=None):
                 if model == "db":
                     for p in Property.objects.all():
                         p.delete()
-                    for i in NodeIndex.objects.all():
-                        i.delete()
+                    #for i in NodeIndex.objects.all():
+                    #    i.delete()
                 if model == "graphdb":
                     graph = graph_init()
                     graph.delete_all()

@@ -7,41 +7,27 @@ import re, tldextract, ast
 import lxml.objectify
 
 
-def campaign_to_subcluster(sc, c = None):
-    cluster = {}
-    if c:
-        cluster = {
-            "name": c.name,
-            "id": c.id,
-        }
-    """
-    try:
-        c = Cluster.objects.get(name=m.authored_by)
-        cluster["id"] = c.id
-    except:
-        pass
-    """
-
+def campaign_to_subcluster(c):
     subcluster = {
-        "name": sc.title,
-        "description": sc.description.value,
-        "firstseen": str(sc.timestamp),
-        "cluster": cluster,
-        "id": None,
-        "tag":{},
+        "name": c.title,
+        #"description": sc.description.value,
+        "firstseen": str(c.timestamp),
+        #"cluster": cluster,
+        #"id": None,
+        #"tag":{},
     }
-
+    print subcluster
     """
     for link in m.links.link:
         rel = link.attrib.get("rel")
         subcluster["tag"][rel] = link
-    """
 
     try:
         s = SubCluster.objects.get(name=sc.title)
         subcluster["id"] = s.id
     except:
         pass
+    """
     return subcluster
 
 
@@ -64,7 +50,8 @@ def object_to_node(o):
         index["key"] = "name"
     elif type == "DomainNameObjectType":
         node["content"] = p["value"]
-        index["label"] = "Domain"
+        #index["label"] = "Domain"
+        index["label"] = "Host"
         index["key"] = "name"
 
     if index:
@@ -113,18 +100,36 @@ def obs_to_node(obs, sc):
 def pre_import_stix(file, cluster=None):
     from stix.core import STIXPackage  
     pkg = STIXPackage()
-
     pkg = pkg.from_xml(file)
-    campaigns= pkg.campaigns
-    obs = pkg.observables
 
-    sc = None
-    if campaigns:
-        sc = campaign_to_subcluster(campaigns[0], cluster)
+    reports = pkg.reports
+    header = None
+    timestamp = ""
+    try:
+        header = reports[0].header
+        timestamp = reports[0].timestamp
+    except:
+        header = pkg.header
+    #sc = header_to_subcluster(header)
+    sc = {
+        "name": header.title,
+        "description": header.description,
+        "firstseen": timestamp,
+    }
+
+    """
+    campaigns= pkg.campaigns
+    for campaign in campaigns:
+        s = campaign_to_subcluster(campaign)
+        if not s in sc:
+            sc.append(s)
+    """
+    #ttp = pkg.ttps
+    obs = pkg.observables
     if sc:
         sc["node"] = []
         sc = obs_to_node(obs, sc)
-        #sc["cluster"] = cluster
+        sc["cluster"] = cluster
         
     return sc
     

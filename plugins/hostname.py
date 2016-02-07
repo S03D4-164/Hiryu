@@ -30,7 +30,8 @@ def create_ip_from_host(hostname):
 
 
 def parse_hostname(node, subcluster = None):
-    hostname =  node.key_property.value
+    #hostname =  node.key_property.value
+    hostname =  node.value
 
     ips = create_ip_from_host(hostname)
     if ips:

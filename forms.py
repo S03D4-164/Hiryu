@@ -207,6 +207,15 @@ class IOCTermForm(forms.ModelForm):
         self.fields["text"].required = False
         self.fields["allow_import"].widget = Select(choices=((0,"False"),(1,"True")))
         self.fields["allow_export"].widget = Select(choices=((0,"False"),(1,"True")))
+    def clean(self):
+        ioc = self.cleaned_data["iocterm"]
+        text = self.cleaned_data["text"].strip()
+        if not ioc and text:
+            ioc, created = IOCTerm.objects.get_or_create(
+                text = text
+            )
+            self.cleaned_data["iocterm"] = ioc
+        return self.cleaned_data
 
 class CybObjForm(forms.ModelForm):
     cybobj = forms.ModelChoiceField(

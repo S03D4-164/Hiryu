@@ -8,8 +8,18 @@
 <script>
 $(document).ready(
 	function(){
-                $('#index_table').DataTable({"order":[0, 'desc']});
-                $('#reltemplate_table').DataTable({"order":[0, 'desc']});
+                $('#reltemplate_table').dataTable({
+                    "processing":true,
+                    "serverSide":true,
+                    "ajax": "{% url 'reltemplate_data' %}",
+                    "order":[0, 'desc'],
+                });
+                $('#index_table').dataTable({
+                    "processing":true,
+                    "serverSide":true,
+                    "ajax": "{% url 'index_data' %}",
+                    "order":[0, 'desc'],
+                });
                 $('#iocterm_table').DataTable({"order":[0, 'desc']});
                 $('#cybobj_table').DataTable({"order":[0, 'desc']});
 		//$('#id_firstseen').datetimepicker({
@@ -104,9 +114,9 @@ $(document).ready(
 
 <thead><tr >
 <th class="col-md-1">ID</th>
-<th class="col-md-5">Label</th>
-<th class="col-md-5">Primary Key</th>
 <th class="col-md-1">Icon</th>
+<th class="col-md-5">Label</th>
+<th class="col-md-5">Key</th>
 </tr></thead>
 
 <tbody>

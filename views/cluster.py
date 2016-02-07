@@ -124,7 +124,7 @@ def cluster_view(request, id):
                         "cluster":sc["cluster"],
                         "node":sc["node"],
                     }
-                    return render(request, "import_view.html", context)
+                    return render(request, "import_stix.html", context)
     print form
     c = {
         "form":form,

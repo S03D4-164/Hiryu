@@ -5,7 +5,8 @@ from ..models import *
 from ..views.db import get_node_on_db
 
 def whois_domain(domain, subcluster = None):
-    d = domain.key_property.value
+    #d = domain.key_property.value
+    d = domain.value
     w = None
     try:
         w = get_whois(d)
