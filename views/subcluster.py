@@ -4,7 +4,7 @@ from ..models import *
 from ..forms import *
 from ..tasks import process_node
 from .db import push_all_to_graph, get_node_on_db, relform_to_localdb
-from .csv_import import import_subcluster
+from .csv_import import import_subcluster, import_node, import_relation
 from .ioc_import import pre_import_ioc
 from .graph import graph_init
 from .visualize import create_dataset
@@ -74,6 +74,7 @@ def subcluster_view(request, id):
     form = SubClusterForm(instance=subcluster)
     tform = TemplateForm()
     relform = RelCreateForm()
+    ufform = UploadFileForm()
     graph = graph_init()
     if request.method == "POST":
         if "update" in request.POST:
@@ -156,6 +157,17 @@ def subcluster_view(request, id):
                         if relation:
                             relation.subcluster.add(subcluster)
                             relation.save()
+        elif "import_node" in request.POST:
+            ufform = UploadFileForm(request.POST, request.FILES)
+            if ufform.is_valid():
+                p = ufform.cleaned_data["postprocess"]
+                import_node.delay(request.FILES['file'], p)
+        elif "import_relation" in request.POST:
+            ufform = UploadFileForm(request.POST, request.FILES)
+            print request.POST
+            if ufform.is_valid():
+                p = ufform.cleaned_data["postprocess"]
+                import_relation.delay(request.FILES['file'], p)
         elif "remove_all" in request.POST:
             for n in nodes:
                 n.subcluster.remove(subcluster)
@@ -187,6 +199,7 @@ def subcluster_view(request, id):
         "form":form,
         "tform":tform,
         "relform":relform,
+        "ufform":ufform,
         "cluster":subcluster,
         "nodes":nodes,
         "relations":relations,

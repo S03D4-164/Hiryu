@@ -23,7 +23,7 @@ def export_ioc(request, model, id):
         ioc = ioc_api.IOC(
             name = c.name,
             description = c.description,
-            #author = ,
+            author = None,
         )
         for t in c.tag.all():
             rel = t.key.name

@@ -34,7 +34,6 @@ class SubClusterForm(forms.ModelForm):
         self.fields["firstseen"].input_formats = input_formats
         self.fields["tag"].required = False
 
-
 class IndexForm(forms.ModelForm):
     new_label = forms.CharField(max_length="200", required=False)
     new_key = forms.CharField(max_length="200", required=False)
@@ -190,7 +189,7 @@ class PropertyForm(forms.ModelForm):
 
 class UploadFileForm(forms.Form):
     file = forms.FileField()
-    #postprocess = forms.BooleanField(required=False)
+    postprocess = forms.BooleanField(required=False)
 
 class IOCTermForm(forms.ModelForm):
     iocterm = forms.ModelChoiceField(

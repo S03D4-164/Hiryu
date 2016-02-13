@@ -4,6 +4,7 @@ from django.shortcuts import redirect
 from ..models import *
 from ..forms import UploadFileForm
 from .db import get_node_on_db
+from ..tasks import process_node
 
 import csv, os
 
@@ -140,7 +141,7 @@ def import_subcluster(files):
     return redirect("/cluster/")
 
 @app.task
-def import_node(files):
+def import_node(files, postprocess=False):
     fieldnames = (
         "node_label",
         "primary_key",
@@ -167,10 +168,19 @@ def import_node(files):
                 node = set_property_to_entity(node, r["property_key"], r["property_value"])
             if r["subcluster"]:
                 node = set_subcluster_to_entity(node, r["subcluster"], r["cluster"])
+            if postprocess:
+                sc = None
+                try:
+                    sc = SubCluster.objects.get(
+                        name = r["subcluster"]
+                    )
+                except:
+                    pass
+                process_node.delay(node, sc)
     return redirect("/node/")
 
 @app.task
-def import_relation(files):
+def import_relation(files, postprocess=False):
     fieldnames = (
         "src_label",
         "src_key",
@@ -199,6 +209,16 @@ def import_relation(files):
             r["dst_key"],
             r["dst_value"],
         )
+        if postprocess:
+            sc = None
+            try:
+                sc = SubCluster.objects.get(
+                    name = r["subcluster"]
+                )
+            except:
+                pass
+            process_node.delay(src, sc)
+            process_node.delay(dst, sc)   
         if src and dst:
             reltype, created = RelType.objects.get_or_create(
                 name = r["rel_type"]

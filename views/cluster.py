@@ -102,12 +102,10 @@ def cluster_view(request, id):
         elif "import_ioc" in request.POST:
             iform = UploadFileForm(request.POST, request.FILES)
             if iform.is_valid():
-                #import_ioc(request.FILES['file'], cluster)
                 sc = pre_import_ioc(request.FILES['file'])
                 if sc:
                     context = {
                         "subcluster":sc,
-                        #"cluster":sc["cluster"],
                         "cluster":cluster,
                         "node":sc["node"],
                     }
@@ -115,12 +113,10 @@ def cluster_view(request, id):
         elif "import_stix" in request.POST:
             iform = UploadFileForm(request.POST, request.FILES)
             if iform.is_valid():
-                #import_ioc(request.FILES['file'], cluster)
                 sc = pre_import_stix(request.FILES['file'], cluster=cluster)
                 if sc:
                     context = {
                         "subcluster":sc,
-                        #"cluster":sc["cluster"],
                         "cluster":sc["cluster"],
                         "node":sc["node"],
                     }

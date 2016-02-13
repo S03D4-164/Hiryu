@@ -83,12 +83,6 @@ class NodeIndex(models.Model):
     property_key = models.ForeignKey(PropertyKey)
     icon = models.CharField(max_length=200, blank=True, null=True)
     def __str__(self):
-        #return str(self.label.name + " " + self.property_key.name)
-        #return str(self.label.name.encode("utf-8") + " " + self.property_key.name.encode("utf-8"))
-        
-        #l = self.label.name.encode("utf-8")
-        #k = self.property_key.name.encode("utf-8")
-        #return str(l) + str(" ") + str(k)
         i = self.label.name + u" " + self.property_key.name
         return i.encode("utf-8")
     class Meta:
@@ -121,14 +115,9 @@ class Node(models.Model):
     ref = models.PositiveIntegerField(unique=True, blank=True, null=True)
     subcluster = models.ManyToManyField(SubCluster)
     created = models.DateTimeField(auto_now_add=True, blank=True, null=True)
-    #def __str__(self):
-    #    return str(self.label.name + " - " + self.key_property.key.name + " - " + self.key_property.value.encode("utf-8"))
-    #class Meta:
-    #    unique_together = (("label", "key_property"),)
     def __str__(self):
         n =  self.index + u" - " + self.value
         return n.encode("utf-8")
-        #return str(self.index) + str(" - ") + self.value.encode("utf-8")
     class Meta:
         unique_together = (("index", "value"),)
 
@@ -158,7 +147,6 @@ class RelationTemplate(models.Model):
     type = models.ForeignKey(RelType)
     dst_index = models.ForeignKey(NodeIndex, related_name="dst_index")
     def __str__(self):
-        #return "( " + str(self.src_index) + " ) " + str(self.type) + " ( " + str(self.dst_index) + " )"
         s = self.src_index.label.name + u" " + self.src_index.property_key.name
         t = self.type.name
         d = self.dst_index.label.name + u" " + self.dst_index.property_key.name

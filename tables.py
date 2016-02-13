@@ -112,11 +112,9 @@ class NodeData(BaseDatatableView):
 
     def render_column(self, row, column):
         if column == 'id':
-            #left = '<a class="btn btn-default node_id btn-xs" value="{0}"><span class="glyphicon glyphicon-chevron-left"></span></a>'.format(row.id)
             id = '<a class="btn btn-primary btn-sm" href="/node/{0}">{0}</a>'.format(row.id)
             delete = '<a class="btn btn-danger btn-xs" href="/delete/node/{0}">x</a>'.format(row.id)
             #ref = '<a class="btn btn-default btn-sm">{0}</a>'.format(row.ref)
-            #return left+id+ref
             return id + delete
         elif column == 'subcluster':
             td = "<table>"
@@ -155,8 +153,6 @@ class RelationData(BaseDatatableView):
     model = Relation
     #columns = ['id', 'ref', 'src', 'type.name', 'dst', 'subcluster']
     #order_columns = ['id', 'ref', 'src', 'type.name', 'dst', 'subcluster']
-    #columns = ['id', 'firstseen', 'src.index.icon', 'src.key_property.value', 'type.name', 'dst.index.icon', 'dst.key_property.value', ]
-    #order_columns = ['id', 'firstseen', 'src.index.icon', 'src.key_property.value', 'type.name', 'dst.index.icon', 'dst.value', ]
     columns = ['id', 'ref', 'firstseen', 'src.index.icon', 'src.value', 'type.name', 'dst.index.icon', 'dst.value', ]
     order_columns = ['id', 'ref', 'firstseen', 'src.index.icon', 'src.value', 'type.name', 'dst.index.icon', 'dst.value', ]
     max_display_length = 100
@@ -175,11 +171,9 @@ class RelationData(BaseDatatableView):
 
     def render_column(self, row, column):
         if column == 'id':
-            #left = '<a class="btn btn-default rel_id btn-xs" value="{0}"><span class="glyphicon glyphicon-chevron-left"></span></a>'.format(row.id)
             id = '<a class="btn btn-primary btn-sm" href="/relation/{0}">{0}</a>'.format(row.id)
             #ref = '<a class="btn btn-default btn-sm">{0}</a>'.format(row.ref)
             delete = '<a class="btn btn-danger btn-xs" href="/delete/relation/{0}">x</a>'.format(row.id)
-            #return left+id+ref
             return id + delete
         elif column == 'subcluster':
             td = "<table>"

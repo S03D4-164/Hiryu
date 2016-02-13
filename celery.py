@@ -2,7 +2,7 @@ from __future__ import absolute_import
 from kombu import Queue, Exchange
 
 import os
-os.environ['DJANGO_SETTINGS_MODULE'] = 'myproject.settings'
+#os.environ['DJANGO_SETTINGS_MODULE'] = 'myproject.settings'
 
 from celery import Celery
 from datetime import timedelta

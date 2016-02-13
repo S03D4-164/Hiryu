@@ -49,5 +49,5 @@ Hiryu is less powerful than these tools, however, it can store mostly schemaless
 
 3.  Start Django and Celery in project directory
 
-        $ celery worker -A Hiryu -l info -f hiryu.log -D
+        $ DJANGO_SETTINGS_MODULE='myproject.settings' celery worker -A Hiryu -l info -f hiryu.log -D
         $ python manage.py runserver
