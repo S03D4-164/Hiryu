@@ -1,0 +1,1 @@
+[{"model": "Hiryu.reltype", "pk": 1, "fields": {"name": "has_ip"}}, {"model": "Hiryu.reltype", "pk": 2, "fields": {"name": "has_domain"}}, {"model": "Hiryu.reltype", "pk": 4, "fields": {"name": "registered"}}]

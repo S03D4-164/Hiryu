@@ -26,7 +26,7 @@ function visOption(){
                                 "enabled": true,
                         },
                 },
-                "shadow": true,
+                //"shadow": true,
                 "color":{
                     "background":"white",
                 },
@@ -54,6 +54,14 @@ function visOption(){
                     color:'grey',
                 },
                 color:'grey',
+            },
+            "Malware":{
+                shape: 'icon',
+                icon:{
+                    code:'\uf188',
+                    color:'red',
+                },
+                color:'red',
             },
         },
         "edges":{

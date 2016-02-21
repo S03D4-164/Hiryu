@@ -203,7 +203,7 @@ class RelationData(BaseDatatableView):
                 icon = row.dst.index.icon
             else:
                 icon = 'f096'
-            td = '<a title="2" href="/node/{0}"><span style="font-family: FontAwesome;">&#x{1}</span></a>'.format(row.dst.id, icon, row.dst.index)
+            td = '<a title="{2}" href="/node/{0}"><span style="font-family: FontAwesome;">&#x{1}</span></a>'.format(row.dst.id, icon, row.dst.index)
             return td
         else:
             return super(RelationData, self).render_column(row, column)
@@ -235,6 +235,14 @@ class IndexData(BaseDatatableView):
             id = '<a class="btn btn-primary btn-sm">{0}</a>'.format(row.id)
             delete = '<a class="btn btn-danger btn-xs" href="/delete/index/{0}">x</a>'.format(row.id)
             return id + delete
+        elif column == 'icon':
+            icon = None
+            if row.icon:
+                icon = row.icon
+            else:
+                icon = 'f096'
+            td = '<span style="font-family: FontAwesome;">&#x{0}</span>'.format(icon)
+            return td
         elif column == 'label.name':
             return '{0}'.format(row.label.name.encode("utf-8"))
         elif column == 'property_key.name':
