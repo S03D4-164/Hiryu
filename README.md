@@ -17,12 +17,13 @@ Hiryu is less powerful than these tools, however, it can store mostly schemaless
   Set up virtualenv and install python packages.
   
       """Create virtualenv and activate"""
+      $ mkdir venv
       $ virtualenv venv
       $ cd venv
       $ source bin/activate
       
       """Install packages"""
-      $ pip install django celery[redis] py2neo tldextract lxml stix pythonwhois ipwhois psycopg2
+      $ pip install django celery[redis] py2neo tldextract lxml pythonwhois ipwhois psycopg2 ioc_writer django_datatables_view cybox==2.1.0.12 stix=1.2.0.0
       $ source bin/activate
 
 2.  Create Django Project and Install Hiryu
@@ -32,7 +33,7 @@ Hiryu is less powerful than these tools, however, it can store mostly schemaless
         $ cd myproject
         
         """Install Hiryu"""
-        $ git clone https://github.com/S03D4-164/Hiryu.git Hiryu
+        $ git clone https://github.com/S03D4-164/Hiryu.git
         
         """
         Edit myproject/settings.py
@@ -44,6 +45,7 @@ Hiryu is less powerful than these tools, however, it can store mostly schemaless
         """
         
         """Create Django database"""
+        (You can use Hiryu/createdb.sh, but please edit the script to be suitable for your environment.)
         $ python manage.py makemigrations Hiryu
         $ python manage.py migrate
 
