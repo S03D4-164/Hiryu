@@ -48,6 +48,7 @@ Hiryu is less powerful than these tools, however, it can store mostly schemaless
         (You can use Hiryu/createdb.sh, but please edit the script to be suitable for your environment.)
         $ python manage.py makemigrations Hiryu
         $ python manage.py migrate
+        $ python manage.py loaddata Hiryu/fixtures/*
 
 3.  Start Django and Celery in project directory
 
