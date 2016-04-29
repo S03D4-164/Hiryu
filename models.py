@@ -116,7 +116,8 @@ class Node(models.Model):
     subcluster = models.ManyToManyField(SubCluster)
     created = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     def __str__(self):
-        n =  self.index + u" - " + self.value
+        i = self.index.label.name + u" " + self.index.property_ke.name
+        n =  i + u" - " + self.value
         return n.encode("utf-8")
     class Meta:
         unique_together = (("index", "value"),)
