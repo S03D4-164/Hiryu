@@ -190,6 +190,7 @@ Create Node/Relation
 <div class="panel-body">
 <form method=post>{% csrf_token %}
 <table class="table">
+<tr><th class="col-md-3"></th><td></td></tr>
 {{relform.as_table}}
 </table>
 <input class="btn btn-primary btn-md" type="submit" name="create" value="Create">
@@ -206,6 +207,7 @@ Use Template
 <div class="panel-body">
 <form method=post>{% csrf_token %}
 <table class="table">
+<tr><th class="col-md-3"></th><td></td></tr>
 {{tform.as_table}}
 </table>
 <input class="btn btn-primary btn-md" type="submit" name="create_relation" value="Create">
