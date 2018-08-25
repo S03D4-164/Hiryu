@@ -8,6 +8,7 @@ There are already some great tools such as Maltego, MANTIS Framework created by 
 Hiryu is less powerful than these tools, however, it can store mostly schemaless node and relation on local DB, and can use Neo4j GraphDB as backend.
 
 ## Quick Start
+
 0.  Install and Start Neo4j (Optional)
 
   Download Neo4j from neo4j.com and read "Installing Neo4j" carefully.
@@ -29,13 +30,13 @@ Hiryu is less powerful than these tools, however, it can store mostly schemaless
         
 3.  Edit myproject/settings.py
 
-        1. Add 'Hiryu' to INSTALLED_APPS as follows:        
+        1) Add 'Hiryu' to INSTALLED_APPS as follows:        
         INSTALLED_APPS = [
           ...
           'Hiryu',
         ]
         
-        2. Edit DATABASES (e.g. postgresql)
+        2) Edit DATABASES (e.g. postgresql)
         DATABASES = {
             'default': {
                 'ENGINE': 'django.db.backends.postgresql_psycopg2',     
@@ -60,15 +61,14 @@ Hiryu is less powerful than these tools, however, it can store mostly schemaless
         Please confirm you can password login to the DB as the user.
         $ psql -U <DB user> <DB name>
 
-        3. Change ROOT_URLCONF as follows:
+        3) Change ROOT_URLCONF as follows:
         ROOT_URLCONF = 'Hiryu.urls'
 
-        4. Add line NEO4J_AUTH as follows:
+        4) Add line NEO4J_AUTH as follows:
         NEO4J_AUTH="<neo4j user>:<neo4j password>" 
 
         or set environment variable NEO4J_AUTH. 
         $ export NEO4J_AUTH="<neo4j user>:<neo4j password>" 
-        """
         
 4. Create Django database
 
