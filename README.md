@@ -58,7 +58,8 @@ Hiryu is less powerful than these tools, however, it can store mostly schemaless
         # the line must be prior to local all setting.
         local   all             all                                     peer
         
-        Please confirm you can password login to the DB as the user.
+        Restart postgresql and confirm you can password login to the DB as the user.
+        $ sudo /etc/init.d/postgresql restart
         $ psql -U <DB user> <DB name>
 
         3) Change ROOT_URLCONF as follows:
