@@ -65,12 +65,14 @@ Hiryu is less powerful than these tools, however, it can store mostly schemaless
         3) Change ROOT_URLCONF as follows:
         ROOT_URLCONF = 'Hiryu.urls'
 
-        4) Add line NEO4J_AUTH as follows:
-        NEO4J_AUTH="<neo4j user>:<neo4j password>" 
+        4) Add NEO4J_AUTH settings as follows:
+        NEO4J_AUTH = {
+            "HOST": "localhost",
+            "PORT": "7474",
+            "USER": "<neo4j user>",
+            "PASS": "<neo4j pass>",
+        }
 
-        or set environment variable NEO4J_AUTH. 
-        $ export NEO4J_AUTH="<neo4j user>:<neo4j password>" 
-        
 4. Create Django database
 
         (You can use Hiryu/createdb.sh, but please edit the script to be suitable for your environment.)
