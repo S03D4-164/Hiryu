@@ -9,9 +9,10 @@ Hiryu is less powerful than these tools, however, it can store mostly schemaless
 
 ## Quick Start
 
-0.  Install and Start Neo4j (Optional)
+### Requirements
 
-  Download Neo4j from neo4j.com and read "Installing Neo4j" carefully.
+- Redis
+- Neo4j (Optional): confirmed version 3.4.7 works
 
 1.  Set up virtualenv and install python packages.
 
@@ -65,7 +66,7 @@ Hiryu is less powerful than these tools, however, it can store mostly schemaless
         3) Change ROOT_URLCONF as follows:
         ROOT_URLCONF = 'Hiryu.urls'
 
-        4) Add NEO4J_AUTH settings as follows:
+        optional) If you'd like to use Neo4j, add NEO4J_AUTH settings as follows:
         NEO4J_AUTH = {
             "HOST": "localhost",
             "PORT": "7474",
@@ -82,5 +83,6 @@ Hiryu is less powerful than these tools, however, it can store mostly schemaless
 
 5.  Start Django and Celery in project directory
 
+        Please make sure the redis-server is running before start up celery. 
         $ DJANGO_SETTINGS_MODULE='myproject.settings' celery worker -A Hiryu -l info -f hiryu.log -D
         $ python manage.py runserver
