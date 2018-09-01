@@ -188,7 +188,7 @@ def graphdb_view(request):
 
     relations = ()
     try:
-        relations = graph.cypher.execute("MATCH n-[r]->m return n,r,m")
+        relations = graph.cypher.execute("MATCH (n)-[r]->(m) return n,r,m")
     except Exception as e:
         messages.add_message(request, messages.WARNING, 'ERROR: ' + str(e))
         return render(request, "graphdb_list.html", {})
@@ -214,7 +214,7 @@ def graphdb_view(request):
         })
     rlist = sorted(rlist, key=lambda k:k["rel"]["ref"], reverse=True)
 
-    nodes = graph.cypher.execute("MATCH n return n")
+    nodes = graph.cypher.execute("MATCH (n) return n")
     sg = nodes.to_subgraph()
     nlist = []
     for n in sg.nodes:

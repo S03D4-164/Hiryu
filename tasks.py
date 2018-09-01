@@ -108,14 +108,14 @@ def push_relation_to_db(relation, graph):
 @app.task
 def push_graph_to_db(postprocess):
     graph = graph_init()
-    nodes = graph.cypher.execute("MATCH n return n")
+    nodes = graph.cypher.execute("MATCH (n) return n")
     sg = nodes.to_subgraph()
     for n in sg.nodes:
         node = push_node_to_db(n, graph)
         if node and postprocess:
             for s in node.subcluster.all():
                 process_node.delay(node, s)
-    relations = graph.cypher.execute("MATCH n-[r]->m return n,r,m")
+    relations = graph.cypher.execute("MATCH (n)-[r]->(m) return n,r,m")
     for n, r, m in relations:
         rel = push_relation_to_db(r, graph)
 
