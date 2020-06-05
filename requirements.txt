@@ -4,7 +4,7 @@ celery==4.2.1
 certifi==2018.8.24
 chardet==3.0.4
 cybox==2.1.0.12
-Django==1.9.2
+Django==1.11.29
 django-datatables-view==1.16.0
 dnspython==1.15.0
 idna==2.7
